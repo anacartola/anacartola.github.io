@@ -1,0 +1,83 @@
+---
+import type { Localized, ProjectEntry } from "../lib/content";
+import { type Locale } from "../i18n";
+import { useTranslations, localizedPath } from "../i18n/utils";
+import Card from "./Card.astro";
+import Badge from "./Badge.astro";
+
+interface Props {
+  item: Localized<ProjectEntry>;
+  locale: Locale;
+}
+const { item, locale } = Astro.props;
+const { entry, slug, isFallback, lang } = item;
+const t = useTranslations(locale);
+const data = entry.data;
+const href = localizedPath(`/projects/${slug}`, locale);
+---
+
+<Card variant={data.featured ? "highlight" : "default"} href={href} class="project-card">
+  <div class="project-card__head">
+    <Badge suit={data.suit} icon label={t.suits[data.suit]} />
+    {
+      isFallback && (
+        <span class="na-badge">
+          {t.language.notAvailable} {locale.toUpperCase()} · {lang.toUpperCase()}
+        </span>
+      )
+    }
+  </div>
+
+  <h3 class="project-card__title">{data.title}</h3>
+  <p class="project-card__summary">{data.summary}</p>
+
+  <p class="project-card__role">
+    <span class="eyebrow">{t.projects.role}</span>
+    {data.role}
+  </p>
+
+  <ul class="project-card__stack" role="list">
+    {data.stack.slice(0, 5).map((tech) => <li><Badge label={tech} /></li>)}
+  </ul>
+</Card>
+
+<style>
+  .project-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+  .na-badge {
+    font-size: var(--fs-caption);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .project-card__title {
+    margin: 0 0 var(--space-2);
+  }
+  .project-card__summary {
+    margin: 0 0 var(--space-4);
+    color: var(--text);
+    max-width: none;
+  }
+  .project-card__role {
+    margin: 0 0 var(--space-4);
+    font-size: var(--fs-body-sm);
+    color: var(--text-muted);
+    max-width: none;
+  }
+  .project-card__role .eyebrow {
+    display: block;
+  }
+  .project-card__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

@@ -1,0 +1,29 @@
+---
+import type { GetStaticPaths } from "astro";
+import BlogIndexPage from "../../../components/pages/BlogIndexPage.astro";
+import { getPostsForLocale, chunk } from "../../../lib/content";
+import { SECONDARY_LOCALES, isLocale, DEFAULT_LOCALE } from "../../../i18n";
+
+export const getStaticPaths = (async () => {
+  return Promise.all(
+    SECONDARY_LOCALES.map(async (lang) => {
+      const pages = chunk(await getPostsForLocale(lang));
+      return {
+        params: { lang },
+        props: { items: pages[0], lastPage: pages.length },
+      };
+    }),
+  );
+}) satisfies GetStaticPaths;
+
+const { lang } = Astro.params;
+const locale = isLocale(lang) ? lang : DEFAULT_LOCALE;
+const { items, lastPage } = Astro.props;
+---
+
+<BlogIndexPage
+  locale={locale}
+  items={items}
+  currentPage={1}
+  lastPage={lastPage}
+/>

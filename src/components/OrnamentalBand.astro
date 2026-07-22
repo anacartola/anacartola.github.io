@@ -1,0 +1,64 @@
+---
+/**
+ * Ornamental band — Art Déco separator (blue-900) with a row of StarFlares
+ * that twinkle in a loop. Decorative: aria-hidden. The twinkle animation is
+ * disabled under prefers-reduced-motion (handled globally in global.css).
+ */
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+const flares = Array.from({ length: 9 });
+---
+
+<div class:list={["band", className]} aria-hidden="true">
+  <div class="band__flares">
+    {
+      flares.map((_, i) => (
+        <svg
+          class="flare"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          style={`--i:${i}`}
+        >
+          <path
+            d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z"
+            fill="currentColor"
+          />
+        </svg>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .band {
+    background: var(--surface-dark);
+    color: var(--blue-300);
+    padding-block: var(--space-4);
+    overflow: hidden;
+  }
+  .band__flares {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-6);
+    flex-wrap: wrap;
+  }
+  .flare {
+    opacity: 0.4;
+    animation: flare-twinkle 3.2s ease-in-out infinite;
+    animation-delay: calc(var(--i) * 0.35s);
+  }
+  @keyframes flare-twinkle {
+    0%,
+    100% {
+      opacity: 0.25;
+      transform: scale(0.9);
+    }
+    50% {
+      opacity: 0.9;
+      transform: scale(1.1);
+    }
+  }
+</style>

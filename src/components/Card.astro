@@ -1,0 +1,108 @@
+---
+/**
+ * Card — corner-only Art Déco ornament (four L-brackets, no full border).
+ * Corners turn copper (orange-500) on hover; the Highlight variant fixes them
+ * copper. Variants: default (brown-50) · elevated (blue-50) · dark (blue-900)
+ * · highlight (copper corners always).
+ */
+interface Props {
+  variant?: "default" | "elevated" | "dark" | "highlight";
+  href?: string;
+  class?: string;
+}
+const { variant = "default", href, class: className } = Astro.props;
+const Tag = href ? "a" : "div";
+---
+
+<Tag
+  class:list={["card", `card--${variant}`, href && "card--link", className]}
+  href={href}
+>
+  <span class="card-corner card-corner--tl" aria-hidden="true"></span>
+  <span class="card-corner card-corner--tr" aria-hidden="true"></span>
+  <span class="card-corner card-corner--bl" aria-hidden="true"></span>
+  <span class="card-corner card-corner--br" aria-hidden="true"></span>
+  <div class="card__body"><slot /></div>
+</Tag>
+
+<style>
+  .card {
+    position: relative;
+    display: block;
+    padding: var(--space-5);
+    background: var(--surface);
+    color: inherit;
+    text-decoration: none;
+    --corner: var(--border-strong);
+    transition: transform var(--transition);
+  }
+  .card--elevated {
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-raised);
+  }
+  .card--dark {
+    background: var(--surface-dark);
+    color: var(--on-dark);
+    --corner: var(--blue-100);
+  }
+  .card--dark :global(h1),
+  .card--dark :global(h2),
+  .card--dark :global(h3) {
+    color: var(--on-dark);
+  }
+  .card--highlight {
+    --corner: var(--accent); /* copper fixed */
+  }
+
+  .card__body {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Corner brackets */
+  .card-corner {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    z-index: 2;
+    transition: border-color var(--transition);
+  }
+  .card-corner--tl {
+    top: 0;
+    left: 0;
+    border-top: 2px solid var(--corner);
+    border-left: 2px solid var(--corner);
+  }
+  .card-corner--tr {
+    top: 0;
+    right: 0;
+    border-top: 2px solid var(--corner);
+    border-right: 2px solid var(--corner);
+  }
+  .card-corner--bl {
+    bottom: 0;
+    left: 0;
+    border-bottom: 2px solid var(--corner);
+    border-left: 2px solid var(--corner);
+  }
+  .card-corner--br {
+    bottom: 0;
+    right: 0;
+    border-bottom: 2px solid var(--corner);
+    border-right: 2px solid var(--corner);
+  }
+
+  /* Hover: corners go copper (link cards only lift slightly). */
+  .card--link:hover .card-corner,
+  .card--link:focus-visible .card-corner {
+    border-color: var(--accent);
+  }
+  .card--link:hover,
+  .card--link:focus-visible {
+    transform: translateY(-2px);
+  }
+  .card--link:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
+  }
+</style>

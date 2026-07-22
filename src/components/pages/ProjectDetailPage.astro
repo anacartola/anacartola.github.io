@@ -1,0 +1,187 @@
+---
+import { render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { type Locale } from "../../i18n";
+import { useTranslations } from "../../i18n/utils";
+import {
+  getProjectForLocale,
+  getRelatedPostsForProject,
+} from "../../lib/content";
+import Badge from "../Badge.astro";
+import Button from "../Button.astro";
+import PostCard from "../PostCard.astro";
+import SuitIcon from "../symbols/SuitIcon.astro";
+
+interface Props {
+  locale: Locale;
+  slug: string;
+}
+const { locale, slug } = Astro.props;
+const item = await getProjectForLocale(slug, locale);
+if (!item) {
+  return new Response(null, { status: 404 });
+}
+const t = useTranslations(locale);
+const { entry, isFallback, availableLocales } = item;
+const data = entry.data;
+const { Content } = await render(entry);
+const related = await getRelatedPostsForProject(entry, locale);
+---
+
+<BaseLayout
+  locale={locale}
+  route={`/projects/${slug}`}
+  title={`${data.title} — ${t.site.author}`}
+  description={data.summary}
+  availableLocales={availableLocales}
+  type="article"
+>
+  <article class="container-narrow project">
+    {
+      isFallback && (
+        <p class="fallback-note">
+          {t.language.notAvailable} {locale.toUpperCase()}. {t.language.fallbackToEn}
+        </p>
+      )
+    }
+
+    <header class="project__header">
+      <div class="project__suit">
+        <SuitIcon suit={data.suit} size={16} />
+        <span>{t.suits[data.suit]}</span>
+      </div>
+      <h1>{data.title}</h1>
+      <p class="project__summary">{data.summary}</p>
+
+      <dl class="project__meta">
+        <div>
+          <dt>{t.projects.role}</dt>
+          <dd>{data.role}</dd>
+        </div>
+        {
+          data.period && (
+            <div>
+              <dt>{t.projects.period}</dt>
+              <dd>{data.period}</dd>
+            </div>
+          )
+        }
+        <div class="project__meta-stack">
+          <dt>{t.projects.stack}</dt>
+          <dd>
+            <ul role="list">
+              {data.stack.map((tech) => <li><Badge label={tech} /></li>)}
+            </ul>
+          </dd>
+        </div>
+      </dl>
+
+      {
+        (data.repo || data.liveUrl) && (
+          <div class="project__links">
+            {data.liveUrl && (
+              <Button href={data.liveUrl} variant="primary">
+                {t.projects.liveUrl}
+              </Button>
+            )}
+            {data.repo && (
+              <Button href={data.repo} variant="secondary">
+                {t.projects.repo}
+              </Button>
+            )}
+          </div>
+        )
+      }
+    </header>
+
+    {data.heroImage && <img class="project__hero" src={data.heroImage} alt={data.title} />}
+
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+
+  {
+    related.length > 0 && (
+      <section class="container related">
+        <h2>{t.projects.relatedPosts}</h2>
+        <div class="card-grid">
+          {related.map((post) => (
+            <PostCard item={post} locale={locale} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .project {
+    padding-block: var(--space-8);
+  }
+  .fallback-note {
+    font-size: var(--fs-body-sm);
+    color: var(--text-muted);
+    border-left: 3px solid var(--border);
+    padding-left: var(--space-3);
+  }
+  .project__suit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-detail);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: var(--fs-caption);
+    margin-bottom: var(--space-2);
+  }
+  .project__summary {
+    font-size: var(--fs-body-lg);
+    color: var(--text-muted);
+  }
+  .project__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+    margin: var(--space-5) 0;
+  }
+  .project__meta dt {
+    font-size: var(--fs-caption);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-detail);
+    font-weight: 700;
+    margin-bottom: var(--space-1);
+  }
+  .project__meta dd {
+    margin: 0;
+    font-weight: 600;
+  }
+  .project__meta-stack ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .project__links {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-top: var(--space-5);
+  }
+  .project__hero {
+    margin: var(--space-6) 0;
+    border: 1px solid var(--border);
+  }
+  .related {
+    padding-block: var(--space-8);
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: var(--space-5);
+  }
+</style>

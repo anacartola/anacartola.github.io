@@ -1,0 +1,52 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { LOCALES, type Locale } from "../../i18n";
+import { useTranslations } from "../../i18n/utils";
+import SegmentGrid from "../SegmentGrid.astro";
+import ClientWall from "../ClientWall.astro";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  route="/about"
+  title={`${t.about.title} — ${t.site.author}`}
+  description={t.meta.defaultDescription}
+  availableLocales={LOCALES}
+>
+  <section class="container-narrow page-head">
+    <h1>{t.about.title}</h1>
+    <p class="lede">{t.about.intro}</p>
+  </section>
+
+  <section class="container-narrow block">
+    <h2>{t.about.positioning}</h2>
+    <p>{`{{ TODO: copy ${locale.toUpperCase()} — posicionamento / autoridade }}`}</p>
+  </section>
+
+  <section class="container block">
+    <SegmentGrid locale={locale} />
+  </section>
+
+  <section class="container block">
+    <ClientWall locale={locale} />
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding-block: var(--space-8) var(--space-4);
+  }
+  .lede {
+    font-size: var(--fs-body-lg);
+    color: var(--text-muted);
+  }
+  .block {
+    padding-block: var(--space-6);
+  }
+</style>

@@ -1,0 +1,105 @@
+---
+/**
+ * Button — carries the signature anatomy:
+ *   external straight (square outer border, radius 0) + internal round
+ *   (inset 5px rectangle, radius 5px). The interaction gesture is copper/patina:
+ *   teal -> copper on hover. Renders as <a> when `href` is set, else <button>.
+ */
+interface Props {
+  href?: string;
+  variant?: "primary" | "secondary";
+  type?: "button" | "submit";
+  class?: string;
+  [key: string]: any;
+}
+const {
+  href,
+  variant = "primary",
+  type = "button",
+  class: className,
+  ...rest
+} = Astro.props;
+const Tag = href ? "a" : "button";
+---
+
+<Tag
+  class:list={["btn", `btn--${variant}`, className]}
+  href={href}
+  type={href ? undefined : type}
+  {...rest}
+>
+  <span class="btn__label"><slot /></span>
+</Tag>
+
+<style>
+  .btn {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    font-weight: 600;
+    line-height: 1;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0; /* external straight */
+    background: transparent;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      color var(--transition),
+      border-color var(--transition);
+  }
+
+  /* internal round: the inset rectangle behind the label */
+  .btn::before {
+    content: "";
+    position: absolute;
+    inset: var(--inner-inset);
+    border-radius: var(--inner-radius);
+    z-index: -1;
+    transition: background-color var(--transition);
+  }
+
+  .btn__label {
+    position: relative;
+  }
+
+  /* --- Primary: teal fill, white label -> copper on hover --------------- */
+  .btn--primary {
+    border: var(--border-w) solid var(--border-strong);
+    color: var(--brown-50);
+  }
+  .btn--primary::before {
+    background: var(--blue-500);
+  }
+  .btn--primary:hover,
+  .btn--primary:focus-visible {
+    border-color: var(--accent-strong);
+    color: var(--orange-100);
+  }
+  .btn--primary:hover::before,
+  .btn--primary:focus-visible::before {
+    background: var(--accent-strong); /* copper */
+  }
+
+  /* --- Secondary: teal outline/label -> copper on hover ---------------- */
+  .btn--secondary {
+    border: var(--border-w) solid var(--border-strong);
+    color: var(--text-detail);
+  }
+  .btn--secondary::before {
+    background: transparent;
+  }
+  .btn--secondary:hover,
+  .btn--secondary:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .btn--secondary:hover::before,
+  .btn--secondary:focus-visible::before {
+    background: var(--accent-soft);
+  }
+</style>

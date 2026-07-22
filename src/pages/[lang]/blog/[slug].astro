@@ -1,0 +1,18 @@
+---
+import type { GetStaticPaths } from "astro";
+import BlogPostPage from "../../../components/pages/BlogPostPage.astro";
+import { getPostSlugs } from "../../../lib/content";
+import { SECONDARY_LOCALES, isLocale, DEFAULT_LOCALE } from "../../../i18n";
+
+export const getStaticPaths = (async () => {
+  const slugs = await getPostSlugs();
+  return SECONDARY_LOCALES.flatMap((lang) =>
+    slugs.map((slug) => ({ params: { lang, slug } })),
+  );
+}) satisfies GetStaticPaths;
+
+const { lang, slug } = Astro.params;
+const locale = isLocale(lang) ? lang : DEFAULT_LOCALE;
+---
+
+<BlogPostPage locale={locale} slug={slug} />

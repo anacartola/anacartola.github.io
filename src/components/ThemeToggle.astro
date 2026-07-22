@@ -1,0 +1,66 @@
+---
+import { useTranslations } from "../i18n/utils";
+import type { Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<button
+  type="button"
+  class="theme-toggle"
+  data-theme-toggle
+  aria-label={t.theme.toggle}
+  title={t.theme.toggle}
+>
+  <!-- geometric day/night glyph (half-filled circle) — not a lightbulb -->
+  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" />
+    <path d="M12 3 A9 9 0 0 1 12 21 Z" fill="currentColor" />
+  </svg>
+</button>
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    color: var(--text-detail);
+    background: transparent;
+    border: var(--border-w) solid var(--border);
+    border-radius: 0;
+    cursor: pointer;
+    transition:
+      color var(--transition),
+      border-color var(--transition);
+  }
+  .theme-toggle:hover,
+  .theme-toggle:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+</style>
+
+<script>
+  document.querySelectorAll("[data-theme-toggle]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const root = document.documentElement;
+      const current =
+        root.getAttribute("data-theme") ??
+        (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      const next = current === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try {
+        localStorage.setItem("theme", next);
+      } catch {
+        /* storage unavailable — theme just won't persist */
+      }
+    });
+  });
+</script>

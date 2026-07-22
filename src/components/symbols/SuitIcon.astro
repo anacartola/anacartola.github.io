@@ -1,0 +1,38 @@
+---
+/**
+ * Suit glyph — the brand's categorisation system (not decoration).
+ * spades Analytics · diamonds Business · hearts Research · clubs Engineering.
+ * fill="currentColor" so colour is set by the consumer via the suit token.
+ */
+type Suit = "spades" | "diamonds" | "hearts" | "clubs";
+interface Props {
+  suit: Suit;
+  size?: number;
+  label?: string;
+  class?: string;
+}
+const { suit, size = 16, label, class: className } = Astro.props;
+
+const paths: Record<Suit, string> = {
+  spades:
+    "M12 2 C12 2 4 8.5 4 13.2 A3.4 3.4 0 0 0 10.6 14.2 C10.2 16.6 9 18.4 7.6 19.4 L16.4 19.4 C15 18.4 13.8 16.6 13.4 14.2 A3.4 3.4 0 0 0 20 13.2 C20 8.5 12 2 12 2 Z",
+  hearts:
+    "M12 20 S3.5 14.2 3.5 8.6 A3.9 3.9 0 0 1 12 6.2 A3.9 3.9 0 0 1 20.5 8.6 C20.5 14.2 12 20 12 20 Z",
+  diamonds: "M12 2 20 12 12 22 4 12 Z",
+  clubs:
+    "M12 2.2 A3.3 3.3 0 0 1 14.1 8.1 A3.4 3.4 0 1 1 15.2 14.4 A3.4 3.4 0 1 1 8.8 14.4 A3.4 3.4 0 1 1 9.9 8.1 A3.3 3.3 0 0 1 12 2.2 Z M10.6 13.8 C10.4 16.4 9.4 18.4 8 19.4 L16 19.4 C14.6 18.4 13.6 16.4 13.4 13.8 Z",
+};
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="currentColor"
+  aria-hidden={label ? undefined : "true"}
+  role={label ? "img" : undefined}
+  class={className}
+>
+  {label && <title>{label}</title>}
+  <path d={paths[suit]} />
+</svg>

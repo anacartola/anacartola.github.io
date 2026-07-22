@@ -1,0 +1,123 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { LOCALES, type Locale } from "../../i18n";
+import { useTranslations, localizedPath } from "../../i18n/utils";
+import { getProjectsForLocale, getPostsForLocale } from "../../lib/content";
+import Button from "../Button.astro";
+import ProjectCard from "../ProjectCard.astro";
+import PostCard from "../PostCard.astro";
+import OrnamentalBand from "../OrnamentalBand.astro";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const allProjects = await getProjectsForLocale(locale);
+const featured = allProjects.filter((p) => p.entry.data.featured);
+const projects = (featured.length > 0 ? featured : allProjects).slice(0, 3);
+const posts = (await getPostsForLocale(locale)).slice(0, 3);
+---
+
+<BaseLayout
+  locale={locale}
+  route="/"
+  title={`${t.site.author} — ${t.site.tagline}`}
+  description={t.meta.defaultDescription}
+  availableLocales={LOCALES}
+>
+  <section class="hero">
+    <div class="container">
+      <p class="eyebrow">{t.home.heroEyebrow}</p>
+      <h1 class="hero__headline">{t.site.tagline}</h1>
+      <p class="hero__lede">{`{{ TODO: copy ${locale.toUpperCase()} — hero sub-headline }}`}</p>
+      <div class="hero__cta">
+        <Button href={localizedPath("/projects", locale)} variant="primary">
+          {t.home.heroCtaProjects}
+        </Button>
+        <Button href={localizedPath("/contact", locale)} variant="secondary">
+          {t.home.heroCtaContact}
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <OrnamentalBand />
+
+  {
+    projects.length > 0 && (
+      <section class="home-section container">
+        <div class="home-section__head">
+          <h2>{t.home.featuredProjects}</h2>
+          <a href={localizedPath("/projects", locale)}>{t.home.viewAllProjects}</a>
+        </div>
+        <div class="card-grid">
+          {projects.map((item) => (
+            <ProjectCard item={item} locale={locale} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    posts.length > 0 && (
+      <section class="home-section container">
+        <div class="home-section__head">
+          <h2>{t.home.latestPosts}</h2>
+          <a href={localizedPath("/blog", locale)}>{t.home.viewAllPosts}</a>
+        </div>
+        <div class="card-grid">
+          {posts.map((item) => (
+            <PostCard item={item} locale={locale} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-block: var(--space-12) var(--space-8);
+  }
+  .hero__headline {
+    font-size: var(--fs-display);
+    line-height: var(--lh-display);
+    font-weight: 400; /* Croco Regular at display size */
+    color: var(--text);
+    max-width: 20ch;
+    margin: 0 0 var(--space-4);
+  }
+  .hero__lede {
+    font-size: var(--fs-body-lg);
+    line-height: var(--lh-body-lg);
+    color: var(--text-muted);
+    max-width: 52ch;
+    margin: 0 0 var(--space-6);
+  }
+  .hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+  .home-section {
+    padding-block: var(--space-8);
+  }
+  .home-section__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+  }
+  .home-section__head h2 {
+    margin: 0;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: var(--space-5);
+  }
+</style>

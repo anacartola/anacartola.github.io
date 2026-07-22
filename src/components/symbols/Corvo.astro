@@ -1,0 +1,13 @@
+---
+/** Corvo (raven) — editorial voice. Geometric silhouette placeholder.
+ *  fill="currentColor". Replace with the final brand asset when available. */
+interface Props { size?: number; title?: string; class?: string; }
+const { size = 40, title, class: className } = Astro.props;
+---
+<svg width={size} height={size} viewBox="0 0 48 48" fill="currentColor"
+  role={title ? "img" : undefined} aria-hidden={title ? undefined : "true"} class={className}>
+  {title && <title>{title}</title>}
+  <!-- ponytail: placeholder geometry — swap for final Corvo silhouette -->
+  <path d="M8 30 L22 18 L20 12 L26 16 L38 12 L30 22 L40 26 L26 28 L22 40 L18 30 Z" />
+  <circle cx="27" cy="19" r="1.4" fill="var(--bg)" />
+</svg>

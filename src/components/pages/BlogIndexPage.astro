@@ -1,0 +1,114 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { LOCALES, type Locale } from "../../i18n";
+import { useTranslations, localizedPath } from "../../i18n/utils";
+import type { Localized, PostEntry } from "../../lib/content";
+import PostCard from "../PostCard.astro";
+
+interface Props {
+  locale: Locale;
+  items: Localized<PostEntry>[];
+  currentPage: number;
+  lastPage: number;
+}
+const { locale, items, currentPage, lastPage } = Astro.props;
+const t = useTranslations(locale);
+
+const route = currentPage === 1 ? "/blog" : `/blog/page/${currentPage}`;
+const pageRoute = (n: number) => (n === 1 ? "/blog" : `/blog/page/${n}`);
+const prevUrl =
+  currentPage > 1 ? localizedPath(pageRoute(currentPage - 1), locale) : undefined;
+const nextUrl =
+  currentPage < lastPage ? localizedPath(pageRoute(currentPage + 1), locale) : undefined;
+---
+
+<BaseLayout
+  locale={locale}
+  route={route}
+  title={`${t.blog.title} — ${t.site.author}`}
+  description={t.meta.defaultDescription}
+  availableLocales={LOCALES}
+>
+  <section class="container page-head">
+    <h1>{t.blog.title}</h1>
+    <p class="page-head__intro">{t.blog.intro}</p>
+  </section>
+
+  <section class="container">
+    {
+      items.length > 0 ? (
+        <div class="card-grid">
+          {items.map((item) => (
+            <PostCard item={item} locale={locale} />
+          ))}
+        </div>
+      ) : (
+        <p class="empty">{t.blog.empty}</p>
+      )
+    }
+
+    {
+      lastPage > 1 && (
+        <nav class="pagination" aria-label="pagination">
+          {prevUrl ? (
+            <a href={prevUrl} rel="prev">
+              ← {t.blog.prev}
+            </a>
+          ) : (
+            <span class="is-disabled">← {t.blog.prev}</span>
+          )}
+          <span class="pagination__status">
+            {t.blog.page} {currentPage} {t.blog.of} {lastPage}
+          </span>
+          {nextUrl ? (
+            <a href={nextUrl} rel="next">
+              {t.blog.next} →
+            </a>
+          ) : (
+            <span class="is-disabled">{t.blog.next} →</span>
+          )}
+        </nav>
+      )
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding-block: var(--space-8) var(--space-5);
+  }
+  .page-head__intro {
+    font-size: var(--fs-body-lg);
+    color: var(--text-muted);
+    max-width: 60ch;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: var(--space-5);
+  }
+  .empty {
+    color: var(--text-muted);
+  }
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-top: var(--space-8);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border);
+  }
+  .pagination a {
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .pagination .is-disabled {
+    color: var(--text-muted);
+    opacity: 0.5;
+  }
+  .pagination__status {
+    font-size: var(--fs-body-sm);
+    color: var(--text-muted);
+  }
+</style>

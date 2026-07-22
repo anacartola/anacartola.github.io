@@ -1,0 +1,13 @@
+---
+import type { GetStaticPaths } from "astro";
+import ProjectsIndexPage from "../../../components/pages/ProjectsIndexPage.astro";
+import { SECONDARY_LOCALES, isLocale, DEFAULT_LOCALE } from "../../../i18n";
+
+export const getStaticPaths = (() =>
+  SECONDARY_LOCALES.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
+
+const { lang } = Astro.params;
+const locale = isLocale(lang) ? lang : DEFAULT_LOCALE;
+---
+
+<ProjectsIndexPage locale={locale} />

@@ -1,0 +1,13 @@
+---
+/** Vaga-lume (firefly) — insight / output. Geometric silhouette placeholder.
+ *  fill="currentColor". Replace with the final brand asset when available. */
+interface Props { size?: number; title?: string; class?: string; }
+const { size = 40, title, class: className } = Astro.props;
+---
+<svg width={size} height={size} viewBox="0 0 48 48" fill="currentColor"
+  role={title ? "img" : undefined} aria-hidden={title ? undefined : "true"} class={className}>
+  {title && <title>{title}</title>}
+  <!-- ponytail: placeholder geometry — swap for final Vaga-lume silhouette -->
+  <path d="M24 6 L26 14 L34 12 L28 18 L36 22 L27 22 L30 30 L24 24 L18 30 L21 22 L12 22 L20 18 L14 12 L22 14 Z" />
+  <circle cx="24" cy="21" r="3" fill="var(--bg)" />
+</svg>

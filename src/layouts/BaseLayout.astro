@@ -1,0 +1,60 @@
+---
+import "../styles/global.css";
+import { HTML_LANG, type Locale } from "../i18n";
+import { useTranslations } from "../i18n/utils";
+import SEO from "../components/SEO.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import LearningLanguageNotice from "../components/LearningLanguageNotice.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  /** Canonical, locale-stripped route (e.g. "/blog/foo"). */
+  route: string;
+  availableLocales?: readonly Locale[];
+  ogImage?: string;
+  type?: "website" | "article";
+  publishedTime?: string;
+  modifiedTime?: string;
+}
+const {
+  title,
+  description,
+  locale,
+  route,
+  availableLocales,
+  ogImage,
+  type,
+  publishedTime,
+  modifiedTime,
+} = Astro.props;
+const t = useTranslations(locale);
+---
+
+<!doctype html>
+<html lang={HTML_LANG[locale]}>
+  <head>
+    <SEO
+      title={title}
+      description={description}
+      locale={locale}
+      route={route}
+      availableLocales={availableLocales}
+      ogImage={ogImage}
+      type={type}
+      publishedTime={publishedTime}
+      modifiedTime={modifiedTime}
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t.nav.skipToContent}</a>
+    <Nav locale={locale} route={route} />
+    <LearningLanguageNotice locale={locale} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+  </body>
+</html>

@@ -1,0 +1,105 @@
+/**
+ * PT — Português (língua nativa). Fonte da verdade para o shape do dicionário.
+ * Todas as strings de UI vivem aqui. Nenhuma string hardcoded em componentes.
+ */
+export const pt = {
+  site: {
+    author: "A. Cartola",
+    fullName: "Ana Carolina Cartola",
+    tagline: "Analytics Strategist with Engineering Depth",
+  },
+  nav: {
+    home: "Início",
+    projects: "Projetos",
+    blog: "Blog",
+    about: "Sobre",
+    contact: "Contato",
+    skipToContent: "Pular para o conteúdo",
+    menu: "Menu",
+    close: "Fechar",
+  },
+  theme: {
+    toggle: "Alternar tema claro/escuro",
+    light: "Claro",
+    dark: "Escuro",
+  },
+  language: {
+    switch: "Trocar idioma",
+    current: "Idioma atual",
+    notAvailable: "não disponível em",
+    fallbackToEn: "Exibindo a versão em inglês.",
+  },
+  learningNotice: {
+    text: "Ainda estou aprendendo este idioma. Correções e sugestões são muito bem-vindas.",
+    contact: "Falar comigo",
+    dismiss: "Dispensar aviso",
+  },
+  home: {
+    heroEyebrow: "Analytics · Estratégia · Engenharia",
+    heroCtaProjects: "Ver projetos",
+    heroCtaContact: "Entrar em contato",
+    featuredProjects: "Projetos em destaque",
+    latestPosts: "Últimos artigos",
+    viewAllProjects: "Todos os projetos",
+    viewAllPosts: "Todos os artigos",
+  },
+  projects: {
+    title: "Projetos",
+    intro: "{{ TODO: copy PT — introdução da vitrine de projetos }}",
+    filterAll: "Todos",
+    filterBySuit: "Filtrar por área",
+    role: "Papel",
+    period: "Período",
+    stack: "Stack",
+    repo: "Repositório",
+    liveUrl: "Ver online",
+    relatedPosts: "Artigos relacionados",
+    empty: "Nenhum projeto nesta área ainda.",
+  },
+  blog: {
+    title: "Blog",
+    intro: "{{ TODO: copy PT — introdução do blog }}",
+    readMore: "Ler artigo",
+    readingTime: "min de leitura",
+    published: "Publicado em",
+    updated: "Atualizado em",
+    tags: "Tags",
+    partOfProject: "Parte do projeto",
+    relatedProject: "Projeto relacionado",
+    prev: "Anterior",
+    next: "Próximo",
+    page: "Página",
+    of: "de",
+    empty: "Nenhum artigo publicado ainda.",
+  },
+  about: {
+    title: "Sobre",
+    intro: "{{ TODO: copy PT — bio e posicionamento }}",
+    positioning: "Posicionamento",
+    segments: "Segmentos atendidos",
+    clients: "Clientes",
+    clientsAggregate: "clientes em",
+  },
+  contact: {
+    title: "Contato",
+    intro: "{{ TODO: copy PT — chamada de contato }}",
+    email: "Email",
+    linkedin: "LinkedIn",
+    github: "GitHub",
+    noForm: "Prefiro conversas diretas — escolha o canal que preferir.",
+  },
+  suits: {
+    spades: "Analytics",
+    diamonds: "Business",
+    hearts: "Research",
+    clubs: "Engineering",
+  },
+  footer: {
+    rights: "Todos os direitos reservados.",
+    builtWith: "Construído com Astro.",
+  },
+  meta: {
+    defaultDescription:
+      "{{ TODO: meta description PT — Analytics Strategist with Engineering Depth }}",
+  },
+};

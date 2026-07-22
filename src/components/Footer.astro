@@ -1,0 +1,116 @@
+---
+import { type Locale } from "../i18n";
+import { useTranslations, localizedPath } from "../i18n/utils";
+import { socialLinks } from "../data/site";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const year = new Date().getFullYear();
+
+const nav = [
+  { href: "/projects", label: t.nav.projects },
+  { href: "/blog", label: t.nav.blog },
+  { href: "/about", label: t.nav.about },
+  { href: "/contact", label: t.nav.contact },
+];
+const socialLabel: Record<string, string> = {
+  email: t.contact.email,
+  linkedin: t.contact.linkedin,
+  github: t.contact.github,
+};
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__row">
+    <div>
+      <p class="site-footer__brand">{t.site.author}</p>
+      <p class="site-footer__tagline">{t.site.tagline}</p>
+    </div>
+
+    <nav class="site-footer__nav" aria-label={t.nav.menu}>
+      <ul role="list">
+        {
+          nav.map((item) => (
+            <li>
+              <a href={localizedPath(item.href, locale)}>{item.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <ul class="site-footer__social" role="list">
+      {
+        socialLinks.map((link) => (
+          <li>
+            <a href={link.href} rel="me noopener">
+              {socialLabel[link.key]}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="container site-footer__legal">
+    <p>© {year} {t.site.fullName}. {t.footer.rights} · {t.footer.builtWith}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--space-12);
+    border-top: var(--border-w) solid var(--border);
+    background: var(--surface-dark);
+    color: var(--on-dark);
+    padding-block: var(--space-8) var(--space-5);
+  }
+  .site-footer__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-8);
+    justify-content: space-between;
+  }
+  .site-footer__brand {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin: 0;
+    color: var(--on-dark);
+  }
+  .site-footer__tagline {
+    margin: 0.25rem 0 0;
+    font-size: var(--fs-body-sm);
+    color: var(--blue-100);
+  }
+  .site-footer__nav ul,
+  .site-footer__social {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .site-footer a {
+    color: var(--blue-100);
+    text-decoration: none;
+  }
+  .site-footer a:hover {
+    color: var(--accent);
+  }
+  .site-footer__legal {
+    margin-top: var(--space-6);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--blue-700);
+  }
+  .site-footer__legal p {
+    margin: 0;
+    font-size: var(--fs-caption);
+    color: var(--blue-200);
+    max-width: none;
+  }
+</style>

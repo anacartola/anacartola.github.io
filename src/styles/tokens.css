@@ -1,0 +1,178 @@
+/* ============================================================================
+   A. Cartola — Design Tokens
+   Single source of truth for the brand. NEVER hardcode a hex in a component;
+   always consume these custom properties.
+
+   Colour rules (do not violate):
+   - blue-500 (teal) always dominates; max +2 secondaries per composition.
+   - Teal dominates, purple is accent only — never equal weight.
+   - No gradients between scales (Art Déco = flat colour). Gradient only
+     within one scale -> white/black.
+   - blue-500 and red-500 FAIL as text colours: use only as fill (with white
+     text) or icon stroke. For readable red text use red-300.
+   - Suits <-> areas <-> colour: spade Analytics · diamond Business (yellow)
+     · heart Research · club Engineering (orange). A real categorisation
+     system, not decoration.
+   ========================================================================== */
+
+:root {
+  /* --- Primary (teal) — identity, anchored on blue-500 --------------------- */
+  --blue-50: #e6eeee;
+  --blue-100: #b3c9cb;
+  --blue-200: #8eafb2;
+  --blue-300: #5a8a8e;
+  --blue-400: #3a7379;
+  --blue-500: #095057;
+  --blue-600: #08494f;
+  --blue-700: #06393e;
+  --blue-800: #052c30;
+  --blue-900: #042225;
+
+  /* --- Secondaries with semantic roles ------------------------------------ */
+  --purple-500: #8f456a; /* illusionism / mystery (accent only) */
+
+  --orange-500: #bd4200; /* Engineering (club) / copper-hover */
+  --orange-700: #862f00;
+  --orange-100: #ebc4b0;
+
+  --yellow-400: #eca43d; /* dark-mode accent */
+  --yellow-500: #e78d0d; /* Business (diamond) */
+  --yellow-700: #a46409;
+  --yellow-100: #f8dcb4;
+
+  --green-500: #7e8d37; /* production / stability */
+  --green-700: #596427;
+  --green-100: #d7dcc1;
+
+  --red-500: #740909; /* urgency (fill + white text only) */
+  --red-300: #a25a5a; /* readable red TEXT */
+  --red-100: #d4b3b3;
+
+  --brown-50: #f6f4f2; /* document background (off-white) — never pure #fff */
+  --brown-700: #76635a; /* supporting text */
+
+  --grey-600: #82a3b9; /* UI / support — never an identity colour */
+
+  /* --- Suit accents (categorisation) -------------------------------------- */
+  --suit-spades: var(--blue-500); /* Analytics */
+  --suit-diamonds: var(--yellow-500); /* Business */
+  --suit-hearts: var(--purple-500); /* Research */
+  --suit-clubs: var(--orange-500); /* Engineering */
+
+  /* --- Semantic (light mode) ---------------------------------------------- */
+  --bg: var(--brown-50);
+  --text: var(--blue-900); /* never pure #000 */
+  --text-detail: var(--blue-500);
+  --text-muted: var(--brown-700);
+  --surface: var(--brown-50);
+  --surface-raised: var(--blue-50);
+  --surface-dark: var(--blue-900);
+  --on-dark: var(--blue-50);
+  --border: var(--blue-200);
+  --border-strong: var(--blue-500);
+  --accent: var(--orange-500); /* copper / patina hover */
+  --accent-strong: var(--orange-700);
+  --accent-soft: var(--orange-100);
+  --focus-ring: var(--orange-500);
+
+  /* Alert palette (info variant used by the learning-language notice) */
+  --info-bg: var(--blue-50);
+  --info-border: var(--blue-500);
+  --info-text: var(--blue-900);
+
+  /* --- Typography --------------------------------------------------------- */
+  /* Croco is a commercial display face. Until it is licensed + installed,
+     the geometric fallback (Josefin Sans) stands in. Swap the first family
+     only — nothing else needs to change. See README > Fonts. */
+  --font-display: "Croco", "Josefin Sans", system-ui, sans-serif;
+  --font-body: "Open Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --fs-display: 3rem;      /* 48 / 56 — hero */
+  --lh-display: 3.5rem;
+  --fs-h1: 2.25rem;        /* 36 / 40 */
+  --lh-h1: 2.5rem;
+  --fs-h2: 1.75rem;        /* 28 / 32 */
+  --lh-h2: 2rem;
+  --fs-h3: 1.375rem;       /* 22 / 24 — card title */
+  --lh-h3: 1.5rem;
+  --fs-body-lg: 1.125rem;  /* 18 / 24 */
+  --lh-body-lg: 1.5rem;
+  --fs-body: 1rem;         /* 16 / 20 */
+  --lh-body: 1.25rem;
+  --fs-body-sm: 0.875rem;  /* 14 / 16 */
+  --lh-body-sm: 1rem;
+  --fs-caption: 0.6875rem; /* 11 / 16 — absolute minimum */
+  --lh-caption: 1rem;
+
+  /* --- Spacing / geometry -------------------------------------------------- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+  --space-10: 4rem;
+  --space-12: 6rem;
+  --measure: 68ch; /* readable line length */
+
+  /* "External straight, internal round": the signature anatomy.
+     Outer border is square (radius 0); the inner inset rectangle is rounded. */
+  --inner-inset: 5px;
+  --inner-radius: 5px;
+
+  --border-w: 1.5px;
+  --transition: 160ms ease;
+
+  --shadow-raised: 0 2px 0 0 var(--blue-200);
+}
+
+/* ============================================================================
+   Dark mode — set via [data-theme="dark"] (explicit toggle wins over OS pref)
+   ========================================================================== */
+:root[data-theme="dark"] {
+  --bg: var(--blue-800);
+  --text: var(--blue-50);
+  --text-detail: var(--blue-100);
+  --text-muted: var(--blue-200);
+  --surface: var(--blue-800);
+  --surface-raised: var(--blue-700);
+  --surface-dark: var(--blue-900);
+  --on-dark: var(--blue-50);
+  --border: var(--blue-600);
+  --border-strong: var(--blue-300);
+  --accent: var(--yellow-400);
+  --accent-strong: var(--yellow-500);
+  --accent-soft: var(--yellow-700);
+  --focus-ring: var(--yellow-400);
+
+  --info-bg: var(--blue-700);
+  --info-border: var(--blue-300);
+  --info-text: var(--blue-50);
+
+  --shadow-raised: 0 2px 0 0 var(--blue-900);
+}
+
+/* Follow the OS preference when the user has not made an explicit choice. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: var(--blue-800);
+    --text: var(--blue-50);
+    --text-detail: var(--blue-100);
+    --text-muted: var(--blue-200);
+    --surface: var(--blue-800);
+    --surface-raised: var(--blue-700);
+    --surface-dark: var(--blue-900);
+    --on-dark: var(--blue-50);
+    --border: var(--blue-600);
+    --border-strong: var(--blue-300);
+    --accent: var(--yellow-400);
+    --accent-strong: var(--yellow-500);
+    --accent-soft: var(--yellow-700);
+    --focus-ring: var(--yellow-400);
+    --info-bg: var(--blue-700);
+    --info-border: var(--blue-300);
+    --info-text: var(--blue-50);
+    --shadow-raised: 0 2px 0 0 var(--blue-900);
+  }
+}

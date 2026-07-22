@@ -1,0 +1,82 @@
+---
+import { displayableClients, aggregatedBySegment } from "../data/clients";
+import { type Locale } from "../i18n";
+import { useTranslations } from "../i18n/utils";
+
+/**
+ * Renders ONLY clients cleared to display (permission "granted" or publicWork).
+ * Everyone else is folded into an aggregate count per segment — no name, no
+ * logo. The permission flag lives on the datum (NDA/trademark contract), so
+ * this component never has to make a legal judgement.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const shown = displayableClients();
+const aggregate = aggregatedBySegment();
+const aggregateTotal = aggregate.reduce((sum, a) => sum + a.count, 0);
+---
+
+<section class="clients" aria-labelledby="clients-heading">
+  <h2 id="clients-heading">{t.about.clients}</h2>
+
+  {
+    shown.length > 0 && (
+      <ul class="clients__wall" role="list">
+        {shown.map((client) => (
+          <li class="clients__item">
+            {client.logo ? (
+              <img src={client.logo} alt={client.name} loading="lazy" />
+            ) : (
+              <span class="clients__name">{client.name}</span>
+            )}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  {
+    aggregateTotal > 0 && (
+      <p class="clients__aggregate">
+        +{aggregateTotal} {t.about.clientsAggregate}{" "}
+        {aggregate.map((a) => a.segment).join(", ")}
+      </p>
+    )
+  }
+</section>
+
+<style>
+  .clients__wall {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+    gap: var(--space-4);
+    align-items: center;
+    margin: 0 0 var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+  .clients__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    min-height: 4rem;
+  }
+  .clients__item img {
+    max-height: 2.5rem;
+    width: auto;
+  }
+  .clients__name {
+    font-weight: 700;
+    color: var(--text-detail);
+  }
+  .clients__aggregate {
+    color: var(--text-muted);
+    font-size: var(--fs-body-lg);
+    max-width: none;
+  }
+</style>

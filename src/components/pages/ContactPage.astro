@@ -1,0 +1,96 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { LOCALES, type Locale } from "../../i18n";
+import { useTranslations } from "../../i18n/utils";
+import { socialLinks, SITE } from "../../data/site";
+import DecoFrame from "../DecoFrame.astro";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const label: Record<string, string> = {
+  email: t.contact.email,
+  linkedin: t.contact.linkedin,
+  github: t.contact.github,
+};
+const display: Record<string, string> = {
+  email: SITE.email,
+  linkedin: SITE.linkedin.replace(/^https?:\/\//, ""),
+  github: SITE.github.replace(/^https?:\/\//, ""),
+};
+---
+
+<BaseLayout
+  locale={locale}
+  route="/contact"
+  title={`${t.contact.title} — ${t.site.author}`}
+  description={t.meta.defaultDescription}
+  availableLocales={LOCALES}
+>
+  <section class="container-narrow page-head">
+    <h1>{t.contact.title}</h1>
+    <p class="lede">{t.contact.intro}</p>
+    <p class="note">{t.contact.noForm}</p>
+  </section>
+
+  <section class="container-narrow">
+    <DecoFrame>
+      <ul class="contact-links" role="list">
+        {
+          socialLinks.map((link) => (
+            <li>
+              <span class="contact-links__label">{label[link.key]}</span>
+              <a href={link.href} rel="me noopener">
+                {display[link.key]}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </DecoFrame>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding-block: var(--space-8) var(--space-4);
+  }
+  .lede {
+    font-size: var(--fs-body-lg);
+    color: var(--text-muted);
+  }
+  .note {
+    color: var(--text-muted);
+  }
+  .contact-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+  .contact-links li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .contact-links__label {
+    font-size: var(--fs-caption);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    color: var(--text-detail);
+  }
+  .contact-links a {
+    font-size: var(--fs-body-lg);
+    font-weight: 600;
+    text-decoration: none;
+    word-break: break-word;
+  }
+  .contact-links a:hover {
+    color: var(--accent);
+  }
+</style>

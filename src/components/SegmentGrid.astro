@@ -1,0 +1,58 @@
+---
+import { segments } from "../data/segments";
+import { type Locale } from "../i18n";
+import { useTranslations } from "../i18n/utils";
+import SuitIcon from "./symbols/SuitIcon.astro";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<section class="segments" aria-labelledby="segments-heading">
+  <h2 id="segments-heading">{t.about.segments}</h2>
+  <ul class="segments__grid" role="list">
+    {
+      segments.map((seg) => (
+        <li class="segment" data-suit={seg.suit}>
+          {seg.suit && <SuitIcon suit={seg.suit} size={14} />}
+          <span>{seg.label}</span>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .segments__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .segment {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-weight: 600;
+  }
+  .segment[data-suit="spades"] {
+    color: var(--suit-spades);
+  }
+  .segment[data-suit="diamonds"] {
+    color: var(--yellow-700);
+  }
+  .segment[data-suit="hearts"] {
+    color: var(--suit-hearts);
+  }
+  .segment[data-suit="clubs"] {
+    color: var(--suit-clubs);
+  }
+</style>

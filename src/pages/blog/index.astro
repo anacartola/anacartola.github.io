@@ -1,0 +1,10 @@
+---
+import BlogIndexPage from "../../components/pages/BlogIndexPage.astro";
+import { getPostsForLocale, chunk } from "../../lib/content";
+
+const pages = chunk(await getPostsForLocale("pt"));
+const items = pages[0];
+const lastPage = pages.length;
+---
+
+<BlogIndexPage locale="pt" items={items} currentPage={1} lastPage={lastPage} />

@@ -1,0 +1,101 @@
+---
+import type { Localized, PostEntry } from "../lib/content";
+import { readingTimeMinutes } from "../lib/content";
+import { HTML_LANG, type Locale } from "../i18n";
+import { useTranslations, localizedPath } from "../i18n/utils";
+import Card from "./Card.astro";
+import Badge from "./Badge.astro";
+
+interface Props {
+  item: Localized<PostEntry>;
+  locale: Locale;
+}
+const { item, locale } = Astro.props;
+const { entry, slug, isFallback, lang } = item;
+const t = useTranslations(locale);
+const data = entry.data;
+const href = localizedPath(`/blog/${slug}`, locale);
+const dateLabel = new Intl.DateTimeFormat(HTML_LANG[locale], {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  timeZone: "UTC", // pubDate is date-only; avoid local-tz drift
+}).format(data.pubDate);
+const minutes = readingTimeMinutes(entry);
+---
+
+<Card variant="default" href={href} class="post-card">
+  <div class="post-card__head">
+    {data.suit && <Badge suit={data.suit} icon label={t.suits[data.suit]} />}
+    {
+      isFallback && (
+        <span class="na-badge">
+          {t.language.notAvailable} {locale.toUpperCase()} · {lang.toUpperCase()}
+        </span>
+      )
+    }
+  </div>
+
+  <h3 class="post-card__title">{data.title}</h3>
+  <p class="post-card__desc">{data.description}</p>
+
+  <p class="post-card__meta">
+    <time datetime={data.pubDate.toISOString()}>{dateLabel}</time>
+    <span aria-hidden="true">·</span>
+    <span>{minutes} {t.blog.readingTime}</span>
+  </p>
+
+  {
+    data.tags.length > 0 && (
+      <ul class="post-card__tags" role="list">
+        {data.tags.slice(0, 4).map((tag) => (
+          <li>
+            <Badge label={tag} />
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Card>
+
+<style>
+  .post-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+    min-height: 1.25rem;
+  }
+  .na-badge {
+    font-size: var(--fs-caption);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .post-card__title {
+    margin: 0 0 var(--space-2);
+  }
+  .post-card__desc {
+    margin: 0 0 var(--space-3);
+    color: var(--text);
+    max-width: none;
+  }
+  .post-card__meta {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    margin: 0 0 var(--space-3);
+    font-size: var(--fs-body-sm);
+    color: var(--text-muted);
+    max-width: none;
+  }
+  .post-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

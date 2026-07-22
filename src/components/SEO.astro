@@ -1,0 +1,78 @@
+---
+import { HTML_LANG, type Locale } from "../i18n";
+import { buildAlternates, absoluteUrl } from "../i18n/utils";
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  /** Canonical, locale-stripped route (e.g. "/blog/foo"). */
+  route: string;
+  /** Locales this exact route exists in (for hreflang). Defaults to all. */
+  availableLocales?: readonly Locale[];
+  ogImage?: string;
+  type?: "website" | "article";
+  publishedTime?: string;
+  modifiedTime?: string;
+}
+const {
+  title,
+  description,
+  locale,
+  route,
+  availableLocales,
+  ogImage = "/og-default.svg",
+  type = "website",
+  publishedTime,
+  modifiedTime,
+} = Astro.props;
+
+const site = Astro.site;
+const canonical = absoluteUrl(site, route, locale);
+const alternates = buildAlternates(site, route, availableLocales);
+const ogImageUrl = site ? new URL(ogImage, site).toString() : ogImage;
+const fullTitle = title;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+
+{/* hreflang alternates + x-default */}
+{
+  alternates.map((alt) => (
+    <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+  ))
+}
+
+{/* Open Graph */}
+<meta property="og:type" content={type} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImageUrl} />
+<meta property="og:locale" content={HTML_LANG[locale].replace("-", "_")} />
+{publishedTime && <meta property="article:published_time" content={publishedTime} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+
+{/* Twitter */}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageUrl} />
+
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+{/* No-flash theme init: apply the stored theme before paint. */}
+<script is:inline>
+  (function () {
+    try {
+      var t = localStorage.getItem("theme");
+      if (t === "light" || t === "dark") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) {}
+  })();
+</script>

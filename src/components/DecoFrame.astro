@@ -1,0 +1,109 @@
+---
+/**
+ * DecoFrame — Art Déco double-line frame with ornamented corners
+ * (L-bracket + 45° diamond) in blue-500. Use around CTAs, forms, highlights.
+ */
+interface Props {
+  as?: string;
+  tone?: "default" | "dark";
+  class?: string;
+}
+const { as: Tag = "div", tone = "default", class: className } = Astro.props;
+---
+
+<Tag class:list={["decoframe", `decoframe--${tone}`, className]}>
+  <span class="deco-corner deco-corner--tl" aria-hidden="true"></span>
+  <span class="deco-corner deco-corner--tr" aria-hidden="true"></span>
+  <span class="deco-corner deco-corner--bl" aria-hidden="true"></span>
+  <span class="deco-corner deco-corner--br" aria-hidden="true"></span>
+  <div class="decoframe__inner"><slot /></div>
+</Tag>
+
+<style>
+  .decoframe {
+    position: relative;
+    border: var(--border-w) solid var(--border-strong);
+    border-radius: 0;
+    padding: var(--space-6);
+    --deco-line: var(--border-strong);
+  }
+  /* second (inner) line */
+  .decoframe::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1px solid var(--deco-line);
+    pointer-events: none;
+  }
+  .decoframe--dark {
+    background: var(--surface-dark);
+    color: var(--on-dark);
+    --deco-line: var(--blue-100);
+  }
+  .decoframe--dark :global(h1),
+  .decoframe--dark :global(h2),
+  .decoframe--dark :global(h3) {
+    color: var(--on-dark);
+  }
+
+  .decoframe__inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Corner ornament: L-bracket (borders) + 45° diamond (rotated square). */
+  .deco-corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    z-index: 2;
+  }
+  .deco-corner::after {
+    content: "";
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: var(--deco-line);
+    transform: rotate(45deg);
+  }
+  .deco-corner--tl {
+    top: -1px;
+    left: -1px;
+    border-top: 2px solid var(--deco-line);
+    border-left: 2px solid var(--deco-line);
+  }
+  .deco-corner--tl::after {
+    top: 6px;
+    left: 6px;
+  }
+  .deco-corner--tr {
+    top: -1px;
+    right: -1px;
+    border-top: 2px solid var(--deco-line);
+    border-right: 2px solid var(--deco-line);
+  }
+  .deco-corner--tr::after {
+    top: 6px;
+    right: 6px;
+  }
+  .deco-corner--bl {
+    bottom: -1px;
+    left: -1px;
+    border-bottom: 2px solid var(--deco-line);
+    border-left: 2px solid var(--deco-line);
+  }
+  .deco-corner--bl::after {
+    bottom: 6px;
+    left: 6px;
+  }
+  .deco-corner--br {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 2px solid var(--deco-line);
+    border-right: 2px solid var(--deco-line);
+  }
+  .deco-corner--br::after {
+    bottom: 6px;
+    right: 6px;
+  }
+</style>

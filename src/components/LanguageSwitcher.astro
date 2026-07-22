@@ -1,0 +1,117 @@
+---
+import { LOCALES, LOCALE_NAMES, type Locale } from "../i18n";
+import { useTranslations, localizedPath } from "../i18n/utils";
+
+/**
+ * Language switcher. Preserves the current route across locales. On content
+ * pages, pass `availableLocales` so locales without a translation are flagged
+ * (they still link — the page falls back to EN — but the user is warned).
+ * Built on native <details> disclosure: no JS island required.
+ */
+interface Props {
+  locale: Locale;
+  route: string;
+  availableLocales?: readonly Locale[];
+}
+const { locale, route, availableLocales } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<details class="lang-switch">
+  <summary aria-label={t.language.switch}>
+    <span class="lang-switch__current">{LOCALE_NAMES[locale]}</span>
+    <span class="lang-switch__chevron" aria-hidden="true">▾</span>
+  </summary>
+  <ul class="lang-switch__menu" role="list">
+    {
+      LOCALES.map((loc) => {
+        const available = !availableLocales || availableLocales.includes(loc);
+        return (
+          <li>
+            <a
+              href={localizedPath(route, loc)}
+              hreflang={loc}
+              class:list={["lang-switch__item", loc === locale && "is-current"]}
+              aria-current={loc === locale ? "true" : undefined}
+            >
+              <span>{LOCALE_NAMES[loc]}</span>
+              {!available && (
+                <span class="lang-switch__na">
+                  {t.language.notAvailable} {loc.toUpperCase()}
+                </span>
+              )}
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</details>
+
+<style>
+  .lang-switch {
+    position: relative;
+    font-size: var(--fs-body-sm);
+  }
+  .lang-switch summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.6rem;
+    border: var(--border-w) solid var(--border);
+    border-radius: 0;
+    color: var(--text-detail);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    transition:
+      color var(--transition),
+      border-color var(--transition);
+  }
+  .lang-switch summary::-webkit-details-marker {
+    display: none;
+  }
+  .lang-switch summary:hover,
+  .lang-switch[open] summary {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .lang-switch__chevron {
+    font-size: 0.7em;
+  }
+  .lang-switch__menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    z-index: 50;
+    margin: 0;
+    padding: 0.25rem;
+    list-style: none;
+    min-width: 12rem;
+    background: var(--surface);
+    border: var(--border-w) solid var(--border-strong);
+    box-shadow: var(--shadow-raised);
+  }
+  .lang-switch__item {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 0.6rem;
+    text-decoration: none;
+    color: var(--text);
+    border-radius: 0;
+  }
+  .lang-switch__item:hover,
+  .lang-switch__item:focus-visible {
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+  }
+  .lang-switch__item.is-current {
+    color: var(--text-detail);
+    font-weight: 700;
+  }
+  .lang-switch__na {
+    font-size: var(--fs-caption);
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+</style>

@@ -1,0 +1,23 @@
+---
+import type { GetStaticPaths } from "astro";
+import BlogIndexPage from "../../../components/pages/BlogIndexPage.astro";
+import { getPostsForLocale, chunk } from "../../../lib/content";
+
+export const getStaticPaths = (async () => {
+  const pages = chunk(await getPostsForLocale("pt"));
+  // Page 1 lives at /blog; only emit 2..N here.
+  return pages.slice(1).map((items, i) => ({
+    params: { page: String(i + 2) },
+    props: { items, currentPage: i + 2, lastPage: pages.length },
+  }));
+}) satisfies GetStaticPaths;
+
+const { items, currentPage, lastPage } = Astro.props;
+---
+
+<BlogIndexPage
+  locale="pt"
+  items={items}
+  currentPage={currentPage}
+  lastPage={lastPage}
+/>

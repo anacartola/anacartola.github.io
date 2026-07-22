@@ -1,0 +1,184 @@
+---
+import { render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { HTML_LANG, type Locale } from "../../i18n";
+import { useTranslations, localizedPath } from "../../i18n/utils";
+import {
+  getPostForLocale,
+  getRelatedProjectForPost,
+  readingTimeMinutes,
+} from "../../lib/content";
+import Badge from "../Badge.astro";
+import Card from "../Card.astro";
+import SuitIcon from "../symbols/SuitIcon.astro";
+
+interface Props {
+  locale: Locale;
+  slug: string;
+}
+const { locale, slug } = Astro.props;
+const item = await getPostForLocale(slug, locale);
+if (!item) {
+  return new Response(null, { status: 404 });
+}
+const t = useTranslations(locale);
+const { entry, isFallback, availableLocales } = item;
+const data = entry.data;
+const { Content } = await render(entry);
+const relatedProject = await getRelatedProjectForPost(entry, locale);
+const minutes = readingTimeMinutes(entry);
+
+const fmt = (d: Date) =>
+  new Intl.DateTimeFormat(HTML_LANG[locale], {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC", // pubDate is date-only; avoid local-tz drift
+  }).format(d);
+---
+
+<BaseLayout
+  locale={locale}
+  route={`/blog/${slug}`}
+  title={`${data.title} — ${t.site.author}`}
+  description={data.description}
+  availableLocales={availableLocales}
+  type="article"
+  publishedTime={data.pubDate.toISOString()}
+  modifiedTime={data.updatedDate?.toISOString()}
+>
+  <article class="container-narrow post">
+    {
+      isFallback && (
+        <p class="fallback-note">
+          {t.language.notAvailable} {locale.toUpperCase()}. {t.language.fallbackToEn}
+        </p>
+      )
+    }
+
+    <header class="post__header">
+      {
+        data.suit && (
+          <div class="post__suit">
+            <SuitIcon suit={data.suit} size={14} />
+            <span>{t.suits[data.suit]}</span>
+          </div>
+        )
+      }
+      <h1>{data.title}</h1>
+      <p class="post__desc">{data.description}</p>
+      <p class="post__meta">
+        <time datetime={data.pubDate.toISOString()}>
+          {t.blog.published} {fmt(data.pubDate)}
+        </time>
+        <span aria-hidden="true">·</span>
+        <span>{minutes} {t.blog.readingTime}</span>
+        {
+          data.updatedDate && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>
+                {t.blog.updated} {fmt(data.updatedDate)}
+              </span>
+            </>
+          )
+        }
+      </p>
+    </header>
+
+    {
+      relatedProject && (
+        <Card variant="elevated" class="post__project">
+          <p class="post__project-eyebrow">{t.blog.partOfProject}</p>
+          <a href={localizedPath(`/projects/${relatedProject.slug}`, locale)}>
+            {relatedProject.entry.data.title}
+          </a>
+        </Card>
+      )
+    }
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {
+      data.tags.length > 0 && (
+        <footer class="post__tags">
+          <span class="eyebrow">{t.blog.tags}</span>
+          <ul role="list">
+            {data.tags.map((tag) => (
+              <li>
+                <Badge label={tag} />
+              </li>
+            ))}
+          </ul>
+        </footer>
+      )
+    }
+  </article>
+</BaseLayout>
+
+<style>
+  .post {
+    padding-block: var(--space-8);
+  }
+  .fallback-note {
+    font-size: var(--fs-body-sm);
+    color: var(--text-muted);
+    border-left: 3px solid var(--border);
+    padding-left: var(--space-3);
+  }
+  .post__suit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-detail);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: var(--fs-caption);
+    margin-bottom: var(--space-2);
+  }
+  .post__desc {
+    font-size: var(--fs-body-lg);
+    color: var(--text-muted);
+  }
+  .post__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+    font-size: var(--fs-body-sm);
+    color: var(--text-muted);
+  }
+  .post__project {
+    margin: var(--space-6) 0;
+  }
+  .post__project-eyebrow {
+    font-size: var(--fs-caption);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-detail);
+    font-weight: 700;
+    margin: 0 0 var(--space-1);
+  }
+  .post__project a {
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .post__tags {
+    margin-top: var(--space-8);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border);
+  }
+  .post__tags ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-2) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

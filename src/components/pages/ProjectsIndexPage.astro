@@ -1,0 +1,134 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { LOCALES, type Locale } from "../../i18n";
+import { useTranslations } from "../../i18n/utils";
+import { getProjectsForLocale } from "../../lib/content";
+import ProjectCard from "../ProjectCard.astro";
+import SuitIcon from "../symbols/SuitIcon.astro";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const projects = await getProjectsForLocale(locale);
+
+const suits = ["spades", "diamonds", "hearts", "clubs"] as const;
+---
+
+<BaseLayout
+  locale={locale}
+  route="/projects"
+  title={`${t.projects.title} — ${t.site.author}`}
+  description={t.meta.defaultDescription}
+  availableLocales={LOCALES}
+>
+  <section class="container page-head">
+    <h1>{t.projects.title}</h1>
+    <p class="page-head__intro">{t.projects.intro}</p>
+  </section>
+
+  <section class="container">
+    <div class="filters" role="group" aria-label={t.projects.filterBySuit}>
+      <button type="button" class="filter is-active" data-filter="all" aria-pressed="true">
+        {t.projects.filterAll}
+      </button>
+      {
+        suits.map((suit) => (
+          <button type="button" class="filter" data-filter={suit} aria-pressed="false">
+            <SuitIcon suit={suit} size={12} />
+            {t.suits[suit]}
+          </button>
+        ))
+      }
+    </div>
+
+    {
+      projects.length > 0 ? (
+        <div class="card-grid" data-project-grid>
+          {projects.map((item) => (
+            <div data-project data-suit={item.entry.data.suit}>
+              <ProjectCard item={item} locale={locale} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p class="empty">{t.projects.empty}</p>
+      )
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding-block: var(--space-8) var(--space-4);
+  }
+  .page-head__intro {
+    font-size: var(--fs-body-lg);
+    color: var(--text-muted);
+    max-width: 60ch;
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+  .filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-body);
+    font-size: var(--fs-body-sm);
+    font-weight: 600;
+    padding: 0.4rem 0.75rem;
+    color: var(--text-detail);
+    background: transparent;
+    border: var(--border-w) solid var(--border);
+    border-radius: 0;
+    cursor: pointer;
+    transition:
+      color var(--transition),
+      border-color var(--transition);
+  }
+  .filter:hover,
+  .filter:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .filter.is-active {
+    color: var(--brown-50);
+    background: var(--blue-500);
+    border-color: var(--blue-500);
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: var(--space-5);
+  }
+  [data-project][hidden] {
+    display: none;
+  }
+  .empty {
+    color: var(--text-muted);
+  }
+</style>
+
+<script>
+  // Lightweight client-side suit filter. No dependency, no route explosion.
+  const filters = document.querySelectorAll<HTMLButtonElement>(".filter");
+  const cards = document.querySelectorAll<HTMLElement>("[data-project]");
+  filters.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const filter = btn.dataset.filter;
+      filters.forEach((b) => {
+        const active = b === btn;
+        b.classList.toggle("is-active", active);
+        b.setAttribute("aria-pressed", String(active));
+      });
+      cards.forEach((card) => {
+        card.hidden = filter !== "all" && card.dataset.suit !== filter;
+      });
+    });
+  });
+</script>

@@ -1,0 +1,96 @@
+---
+import { LEARNING_LOCALES, type Locale } from "../i18n";
+import { useTranslations, localizedPath } from "../i18n/utils";
+
+/**
+ * Persistent, discreet learning-language disclaimer. Renders ONLY for FR and ZH
+ * (see LEARNING_LOCALES). Info-alert variant, dismissible for the session.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const show = LEARNING_LOCALES.includes(locale);
+const t = useTranslations(locale);
+const contactHref = localizedPath("/contact", locale);
+---
+
+{
+  show && (
+    <div
+      class="learning-notice"
+      role="note"
+      data-learning-notice
+      data-locale={locale}
+    >
+      <p class="learning-notice__text">
+        {t.learningNotice.text}{" "}
+        <a href={contactHref}>{t.learningNotice.contact}</a>
+      </p>
+      <button
+        type="button"
+        class="learning-notice__dismiss"
+        data-dismiss
+        aria-label={t.learningNotice.dismiss}
+      >
+        ×
+      </button>
+    </div>
+  )
+}
+
+<style>
+  .learning-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    background: var(--info-bg);
+    color: var(--info-text);
+    border-left: 4px solid var(--info-border);
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--fs-body-sm);
+    line-height: var(--lh-body-sm);
+  }
+  .learning-notice[hidden] {
+    display: none;
+  }
+  .learning-notice__text {
+    margin: 0;
+    max-width: none;
+  }
+  .learning-notice__text a {
+    color: var(--info-text);
+    font-weight: 600;
+  }
+  .learning-notice__text a:hover {
+    color: var(--accent);
+  }
+  .learning-notice__dismiss {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--info-text);
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 0.25rem;
+  }
+  .learning-notice__dismiss:hover {
+    color: var(--accent);
+  }
+</style>
+
+<script>
+  // Session-scoped dismissal, per locale. No dependency — sessionStorage only.
+  document.querySelectorAll<HTMLElement>("[data-learning-notice]").forEach((el) => {
+    const key = `learning-notice-dismissed:${el.dataset.locale}`;
+    if (sessionStorage.getItem(key) === "1") {
+      el.hidden = true;
+      return;
+    }
+    el.querySelector("[data-dismiss]")?.addEventListener("click", () => {
+      el.hidden = true;
+      sessionStorage.setItem(key, "1");
+    });
+  });
+</script>

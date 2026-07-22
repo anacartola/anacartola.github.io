@@ -1,0 +1,57 @@
+---
+import SuitIcon from "./symbols/SuitIcon.astro";
+
+type Suit = "spades" | "diamonds" | "hearts" | "clubs";
+interface Props {
+  /** When set, the badge is a suit/area badge and takes the suit colour. */
+  suit?: Suit;
+  /** Optional icon toggle for suit badges. */
+  icon?: boolean;
+  label: string;
+  class?: string;
+}
+const { suit, icon = false, label, class: className } = Astro.props;
+---
+
+<span class:list={["badge", suit && "badge--suit", className]} data-suit={suit}>
+  {suit && icon && <SuitIcon suit={suit} size={10} />}
+  {label}
+</span>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+    font-family: var(--font-body);
+    /* Badge spec: 10px uppercase, tracked. Non-body, decorative label. */
+    font-size: 10px;
+    line-height: 1.4;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 0.25rem 0.5rem;
+    color: var(--text-detail);
+    border: 1px solid var(--border);
+    border-radius: 0; /* external straight */
+    background: transparent;
+  }
+
+  /* Suit badge: coloured by the suit token (categorisation, not decoration). */
+  .badge--suit[data-suit="spades"] {
+    color: var(--suit-spades);
+    border-color: var(--suit-spades);
+  }
+  .badge--suit[data-suit="diamonds"] {
+    color: var(--yellow-700); /* readable text weight of the diamond hue */
+    border-color: var(--suit-diamonds);
+  }
+  .badge--suit[data-suit="hearts"] {
+    color: var(--suit-hearts);
+    border-color: var(--suit-hearts);
+  }
+  .badge--suit[data-suit="clubs"] {
+    color: var(--suit-clubs);
+    border-color: var(--suit-clubs);
+  }
+</style>

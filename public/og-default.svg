@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Default Open Graph card. Placeholder — replace with a licensed-font
+       raster export once Croco is installed. Flat Art Déco, teal-dominant. -->
+  <rect width="1200" height="630" fill="#052c30"/>
+  <rect x="40" y="40" width="1120" height="550" fill="none" stroke="#8eafb2" stroke-width="2"/>
+  <rect x="52" y="52" width="1096" height="526" fill="none" stroke="#5a8a8e" stroke-width="1"/>
+  <!-- cartola mark -->
+  <g fill="#e6eeee" transform="translate(96,150) scale(2.2)">
+    <rect x="4" y="34" width="40" height="4" rx="1"/>
+    <path d="M15 34 L17 12 A2 2 0 0 1 19 10 L29 10 A2 2 0 0 1 31 12 L33 34 Z"/>
+    <rect x="15.6" y="27" width="16.8" height="4" fill="#052c30"/>
+    <circle cx="24" cy="20" r="2.4" fill="#052c30"/>
+  </g>
+  <text x="96" y="430" font-family="'Josefin Sans', sans-serif" font-size="88" font-weight="700" fill="#e6eeee">A. Cartola</text>
+  <text x="100" y="490" font-family="'Open Sans', sans-serif" font-size="34" fill="#8eafb2">Analytics Strategist with Engineering Depth</text>
+</svg>

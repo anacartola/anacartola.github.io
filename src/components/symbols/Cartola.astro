@@ -1,0 +1,33 @@
+---
+/**
+ * Cartola (top hat) — the primary brand mark. Geometric Art Déco construction:
+ * triangle + circle + cut. fill="currentColor". Not "cute", not realistic.
+ * Placeholder geometry — replace with the licensed brand asset when available.
+ */
+interface Props {
+  size?: number;
+  title?: string;
+  class?: string;
+}
+const { size = 32, title, class: className } = Astro.props;
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox="0 0 48 48"
+  fill="currentColor"
+  role={title ? "img" : undefined}
+  aria-hidden={title ? undefined : "true"}
+  class={className}
+>
+  {title && <title>{title}</title>}
+  <!-- brim -->
+  <rect x="4" y="34" width="40" height="4" rx="1" />
+  <!-- crown (trapezoid: triangle + cut) -->
+  <path d="M15 34 L17 12 A2 2 0 0 1 19 10 L29 10 A2 2 0 0 1 31 12 L33 34 Z" />
+  <!-- band cut -->
+  <rect x="15.6" y="27" width="16.8" height="4" fill="var(--bg)" />
+  <!-- circle accent -->
+  <circle cx="24" cy="20" r="2.4" fill="var(--bg)" />
+</svg>

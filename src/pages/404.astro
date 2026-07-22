@@ -1,0 +1,31 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { useTranslations, localizedPath } from "../i18n/utils";
+import Button from "../components/Button.astro";
+const locale = "pt" as const;
+const t = useTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  route="/404"
+  title={`404 — ${t.site.author}`}
+  description="404"
+>
+  <section class="container-narrow notfound">
+    <p class="eyebrow">404</p>
+    <h1>Página não encontrada</h1>
+    <p>Page not found · Page introuvable · 页面未找到</p>
+    <Button href={localizedPath("/", locale)} variant="primary">{t.nav.home}</Button>
+  </section>
+</BaseLayout>
+
+<style>
+  .notfound {
+    padding-block: var(--space-12);
+    text-align: center;
+  }
+  .notfound .eyebrow {
+    justify-content: center;
+  }
+</style>
