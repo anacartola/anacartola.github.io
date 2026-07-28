@@ -26,6 +26,7 @@ const projects = defineCollection({
     stack: z.array(z.string()), // ['dbt','Airflow',...]
     role: z.string(),
     period: z.string().optional(),
+    status: z.enum(["active", "review", "draft"]).default("active"),
     heroImage: z.string().optional(),
     repo: z.string().url().optional(),
     liveUrl: z.string().url().optional(),
@@ -55,4 +56,27 @@ const posts = defineCollection({
   }),
 });
 
-export const collections = { projects, posts };
+const resources = defineCollection({
+  loader: glob({
+    pattern: "**/*.mdx",
+    base: "./src/content/resources",
+    generateId: keepLangId,
+  }),
+  schema: z.object({
+    title: z.string(),
+    summary: z.string(),
+    lang,
+    // calculadora · template · ferramenta · guia
+    kind: z.enum(["calculadora", "template", "ferramenta", "guia"]),
+    suit: suit.optional(), // área associada (naipe), se houver
+    tags: z.array(z.string()).default([]),
+    launchUrl: z.string().url().optional(), // ferramenta externa, se houver
+    repo: z.string().url().optional(),
+    status: z.enum(["live", "beta", "wip"]).default("live"),
+    featured: z.boolean().default(false),
+    order: z.number().default(0),
+    updatedDate: z.coerce.date().optional(),
+  }),
+});
+
+export const collections = { projects, posts, resources };

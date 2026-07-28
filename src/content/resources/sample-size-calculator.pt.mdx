@@ -1,0 +1,28 @@
+---
+title: "Calculadora de tamanho de amostra"
+summary: "Quantos usuários você precisa por variante para detectar um efeito com confiança — sem abrir uma planilha."
+lang: "pt"
+kind: "calculadora"
+suit: "spades"
+tags: ["Experimentação", "A/B test", "Estatística"]
+status: "live"
+featured: true
+order: 1
+updatedDate: 2026-05-12
+---
+
+Informe a taxa de conversão base, o efeito mínimo que vale a pena detectar (MDE)
+e o nível de significância. A calculadora devolve o tamanho de amostra por
+variante e a duração estimada do teste dado o seu tráfego semanal.
+
+## Quando usar
+
+Antes de subir qualquer experimento. Rodar um A/B test subdimensionado é pior
+do que não rodar: você gasta tráfego e ainda tira a conclusão errada.
+
+## O que ela assume
+
+- Teste bicaudal, duas variantes (controle + tratamento).
+- Poder estatístico de 80% por padrão (ajustável).
+- Conversões independentes — para métricas por sessão com repetição, trate o
+  resultado como piso, não teto.

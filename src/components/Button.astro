@@ -1,13 +1,23 @@
 ---
 /**
- * Button — carries the signature anatomy:
- *   external straight (square outer border, radius 0) + internal round
- *   (inset 5px rectangle, radius 5px). The interaction gesture is copper/patina:
- *   teal -> copper on hover. Renders as <a> when `href` is set, else <button>.
+ * Button — A. Cartola anatomy: square outer frame (padding = inset-gap) with an
+ * inner rounded fill; hover shifts hue teal -> copper. Dark mode is derived by
+ * token swap. Renders <a> when `href` is set, else <button>.
+ * API preserved from the original scaffold: `href`, `variant`, `class`, slot.
  */
+type Variant =
+  | "primary"
+  | "secondary"
+  | "ghost"
+  | "success"
+  | "warning"
+  | "danger"
+  | "dark-primary";
 interface Props {
   href?: string;
-  variant?: "primary" | "secondary";
+  variant?: Variant;
+  size?: "md" | "sm";
+  block?: boolean;
   type?: "button" | "submit";
   class?: string;
   [key: string]: any;
@@ -15,6 +25,8 @@ interface Props {
 const {
   href,
   variant = "primary",
+  size = "md",
+  block = false,
   type = "button",
   class: className,
   ...rest
@@ -23,83 +35,78 @@ const Tag = href ? "a" : "button";
 ---
 
 <Tag
-  class:list={["btn", `btn--${variant}`, className]}
+  class:list={[
+    "acb",
+    `acb-${variant}`,
+    size === "sm" && "acb-sm",
+    block && "acb-block",
+    className,
+  ]}
   href={href}
   type={href ? undefined : type}
   {...rest}
 >
-  <span class="btn__label"><slot /></span>
+  <span><slot /></span>
 </Tag>
 
 <style>
-  .btn {
+  .acb {
     position: relative;
-    isolation: isolate;
+    box-sizing: border-box;
     display: inline-flex;
+    padding: var(--inset-gap);
+    border: 0;
+    border-radius: 0;
+    background: var(--o);
+    cursor: pointer;
+    font: var(--type-label);
+    letter-spacing: 0.2px;
+    text-decoration: none;
+    color: var(--tx, var(--blue-500));
+    height: var(--control-h);
+    min-width: var(--control-min-w);
+    transition: background var(--dur-fast) var(--ease-std);
+    -webkit-font-smoothing: antialiased;
+  }
+  .acb > span {
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5em;
-    font-family: var(--font-body);
-    font-size: var(--fs-body);
-    font-weight: 600;
-    line-height: 1;
-    padding: 0.75rem 1.25rem;
-    border-radius: 0; /* external straight */
-    background: transparent;
-    text-decoration: none;
-    cursor: pointer;
-    transition:
-      color var(--transition),
-      border-color var(--transition);
-  }
-
-  /* internal round: the inset rectangle behind the label */
-  .btn::before {
-    content: "";
-    position: absolute;
-    inset: var(--inner-inset);
+    gap: 6px;
+    flex: 1;
     border-radius: var(--inner-radius);
-    z-index: -1;
-    transition: background-color var(--transition);
+    background: var(--i);
+    padding: 0 16px;
+    color: var(--tx, var(--blue-500));
+    transition: background var(--dur-fast) var(--ease-std);
+  }
+  .acb:hover {
+    background: var(--oh);
+  }
+  .acb:hover > span {
+    background: var(--ih);
   }
 
-  .btn__label {
-    position: relative;
-  }
+  .acb-primary { --o: var(--blue-700); --i: var(--blue-100); --oh: var(--orange-500); --ih: var(--orange-100); }
+  .acb-secondary { --o: var(--blue-300); --i: var(--blue-100); --oh: var(--orange-300); --ih: var(--orange-100); }
+  .acb-ghost { --o: transparent; --i: transparent; --oh: var(--orange-500); --ih: var(--orange-100); --tx: var(--ac-ghost-ink, var(--blue-500)); }
+  .acb-success { --o: var(--green-700); --i: var(--green-100); --oh: var(--green-300); --ih: var(--green-100); }
+  .acb-warning { --o: var(--yellow-700); --i: var(--yellow-100); --oh: var(--yellow-300); --ih: var(--yellow-100); }
+  .acb-danger { --o: var(--red-500); --i: var(--red-100); --oh: var(--red-300); --ih: var(--red-100); }
+  .acb-dark-primary { --o: var(--blue-500); --i: var(--blue-900); --oh: var(--orange-500); --ih: var(--orange-700); --tx: var(--grey-50); }
 
-  /* --- Primary: teal fill, white label -> copper on hover --------------- */
-  .btn--primary {
-    border: var(--border-w) solid var(--border-strong);
-    color: var(--brown-50);
-  }
-  .btn--primary::before {
-    background: var(--blue-500);
-  }
-  .btn--primary:hover,
-  .btn--primary:focus-visible {
-    border-color: var(--accent-strong);
-    color: var(--orange-100);
-  }
-  .btn--primary:hover::before,
-  .btn--primary:focus-visible::before {
-    background: var(--accent-strong); /* copper */
-  }
+  .acb-ghost,
+  .acb-ghost > span { background: transparent; }
+  .acb-sm { height: var(--control-h-sm); min-width: 0; }
+  .acb-sm > span { padding: 0 14px; }
+  .acb-block { display: flex; width: 100%; }
+  .acb:focus-visible { outline: none; background: var(--oh); }
+  .acb:focus-visible > span { background: var(--ih); box-shadow: 0 0 0 2px var(--oh) inset; }
 
-  /* --- Secondary: teal outline/label -> copper on hover ---------------- */
-  .btn--secondary {
-    border: var(--border-w) solid var(--border-strong);
-    color: var(--text-detail);
-  }
-  .btn--secondary::before {
-    background: transparent;
-  }
-  .btn--secondary:hover,
-  .btn--secondary:focus-visible {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-  .btn--secondary:hover::before,
-  .btn--secondary:focus-visible::before {
-    background: var(--accent-soft);
-  }
+  /* Dark mode — token swap only */
+  :global([data-theme="dark"]) .acb-primary { --o: var(--blue-500); --i: var(--grey-50); --ih: var(--orange-50); }
+  :global([data-theme="dark"]) .acb-secondary { --o: var(--blue-300); --i: var(--grey-50); --ih: var(--orange-50); }
+  :global([data-theme="dark"]) .acb-ghost { --tx: var(--blue-50); --ih: var(--orange-50); }
+  :global([data-theme="dark"]) .acb-ghost:hover,
+  :global([data-theme="dark"]) .acb-ghost:focus-visible { --tx: var(--blue-900); }
 </style>

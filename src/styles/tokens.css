@@ -1,178 +1,332 @@
 /* ============================================================================
-   A. Cartola — Design Tokens
-   Single source of truth for the brand. NEVER hardcode a hex in a component;
-   always consume these custom properties.
+   A. Cartola — Design Tokens (adopted from the design system)
+   Source of truth: the A. Cartola design system (styles.css / tokens/*).
+   NEVER hardcode a hex in a component; consume these custom properties.
 
-   Colour rules (do not violate):
-   - blue-500 (teal) always dominates; max +2 secondaries per composition.
-   - Teal dominates, purple is accent only — never equal weight.
-   - No gradients between scales (Art Déco = flat colour). Gradient only
-     within one scale -> white/black.
-   - blue-500 and red-500 FAIL as text colours: use only as fill (with white
-     text) or icon stroke. For readable red text use red-300.
-   - Suits <-> areas <-> colour: spade Analytics · diamond Business (yellow)
-     · heart Research · club Engineering (orange). A real categorisation
-     system, not decoration.
+   Sections:
+     1. Colour scales (9 chromatic + pink)
+     2. Semantic tokens — light + dark theme
+     3. Spacing, geometry, motion
+     4. Typography (self-hosted Croco + Open Sans)
+     5. Compatibility aliases (old token names → new) — transitional
    ========================================================================== */
 
+/* ============================================================
+   1. COLOUR SCALES — 9 chromatic scales × 10 stops. blue = dark teal.
+   ============================================================ */
 :root {
-  /* --- Primary (teal) — identity, anchored on blue-500 --------------------- */
-  --blue-50: #e6eeee;
+  --blue-50:  #e6eeee;
   --blue-100: #b3c9cb;
   --blue-200: #8eafb2;
   --blue-300: #5a8a8e;
   --blue-400: #3a7379;
-  --blue-500: #095057;
+  --blue-500: #095057; /* ANCHOR */
   --blue-600: #08494f;
   --blue-700: #06393e;
   --blue-800: #052c30;
-  --blue-900: #042225;
+  --blue-900: #042225; /* functional black */
 
-  /* --- Secondaries with semantic roles ------------------------------------ */
-  --purple-500: #8f456a; /* illusionism / mystery (accent only) */
+  --purple-50:  #f4ecf0;
+  --purple-100: #dcc5d1;
+  --purple-200: #cba9ba;
+  --purple-300: #b4829b;
+  --purple-400: #a56a88;
+  --purple-500: #8f456a;
+  --purple-600: #823f60;
+  --purple-700: #66314b;
+  --purple-800: #4f263a;
+  --purple-900: #3c1d2d;
 
-  --orange-500: #bd4200; /* Engineering (club) / copper-hover */
-  --orange-700: #862f00;
-  --orange-100: #ebc4b0;
-
-  --yellow-400: #eca43d; /* dark-mode accent */
-  --yellow-500: #e78d0d; /* Business (diamond) */
-  --yellow-700: #a46409;
-  --yellow-100: #f8dcb4;
-
-  --green-500: #7e8d37; /* production / stability */
-  --green-700: #596427;
-  --green-100: #d7dcc1;
-
-  --red-500: #740909; /* urgency (fill + white text only) */
-  --red-300: #a25a5a; /* readable red TEXT */
+  --red-50:  #f1e6e6;
   --red-100: #d4b3b3;
+  --red-200: #bf8e8e;
+  --red-300: #a25a5a; /* min. legible red text (AA) */
+  --red-400: #903a3a;
+  --red-500: #740909; /* bg only, white text */
+  --red-600: #6a0808;
+  --red-700: #520606;
+  --red-800: #400505;
+  --red-900: #310404;
 
-  --brown-50: #f6f4f2; /* document background (off-white) — never pure #fff */
-  --brown-700: #76635a; /* supporting text */
+  --orange-50:  #f8ece6;
+  --orange-100: #ebc4b0;
+  --orange-200: #e1a88a;
+  --orange-300: #d38054;
+  --orange-400: #ca6833;
+  --orange-500: #bd4200; /* copper anchor / interactive hover */
+  --orange-600: #ac3c00;
+  --orange-700: #862f00;
+  --orange-800: #682400;
+  --orange-900: #4f1c00;
 
-  --grey-600: #82a3b9; /* UI / support — never an identity colour */
+  --yellow-50:  #fdf4e7;
+  --yellow-100: #f8dcb4;
+  --yellow-200: #f4cb90;
+  --yellow-300: #efb35d;
+  --yellow-400: #eca43d;
+  --yellow-500: #e78d0d;
+  --yellow-600: #d2800c;
+  --yellow-700: #a46409;
+  --yellow-800: #7f4e07;
+  --yellow-900: #613b05;
 
-  /* --- Suit accents (categorisation) -------------------------------------- */
-  --suit-spades: var(--blue-500); /* Analytics */
-  --suit-diamonds: var(--yellow-500); /* Business */
-  --suit-hearts: var(--purple-500); /* Research */
-  --suit-clubs: var(--orange-500); /* Engineering */
+  --green-50:  #f2f4eb;
+  --green-100: #d7dcc1;
+  --green-200: #c4cba3;
+  --green-300: #a9b379;
+  --green-400: #98a45f;
+  --green-500: #7e8d37;
+  --green-600: #738032;
+  --green-700: #596427;
+  --green-800: #454e1e;
+  --green-900: #353b17;
 
-  /* --- Semantic (light mode) ---------------------------------------------- */
-  --bg: var(--brown-50);
-  --text: var(--blue-900); /* never pure #000 */
-  --text-detail: var(--blue-500);
-  --text-muted: var(--brown-700);
-  --surface: var(--brown-50);
-  --surface-raised: var(--blue-50);
-  --surface-dark: var(--blue-900);
-  --on-dark: var(--blue-50);
-  --border: var(--blue-200);
-  --border-strong: var(--blue-500);
-  --accent: var(--orange-500); /* copper / patina hover */
+  --brown-50:  #f6f4f2;
+  --brown-100: #e3dbd7;
+  --brown-200: #d6cac4;
+  --brown-300: #c3b2a9;
+  --brown-400: #b8a399;
+  --brown-500: #a68c7f;
+  --brown-600: #977f74;
+  --brown-700: #76635a;
+  --brown-800: #5b4d46;
+  --brown-900: #463b35;
+
+  --grey-50:  #f4f7fa; /* UI background */
+  --grey-100: #dce7ef;
+  --grey-200: #cbdce7;
+  --grey-300: #b4ccdc;
+  --grey-400: #a5c2d5;
+  --grey-500: #8fb3cb;
+  --grey-600: #82a3b9;
+  --grey-700: #667f90;
+  --grey-800: #4f6270;
+  --grey-900: #3c4b55;
+
+  --pink-500: #fab2b2;
+}
+
+/* ============================================================
+   2. SEMANTIC TOKENS — light (default) + dark
+   ============================================================ */
+:root {
+  /* surfaces */
+  --surface-page:      var(--grey-50);
+  --surface-elevated:  var(--blue-50);
+  --surface-card:      var(--grey-50);
+  --surface-dark:      var(--blue-900);
+  --surface-inset:     var(--blue-50);
+
+  /* text */
+  --text-body:      var(--blue-900);
+  --text-heading:   var(--blue-500);
+  --text-accent:    var(--blue-500);
+  --text-muted:     var(--brown-700);
+  --text-on-dark:   var(--blue-50);
+  --text-disabled:  var(--grey-600);
+  --text-placeholder: var(--grey-500);
+
+  /* interactive (teal base, copper hover) */
+  --interactive-outer:        var(--blue-700);
+  --interactive-inner:        var(--blue-100);
+  --interactive-outer-hover:  var(--orange-500);
+  --interactive-inner-hover:  var(--orange-100);
+  --interactive-text:         var(--blue-500);
+
+  --logo-ink: var(--blue-500);
+
+  /* borders / ornaments */
+  --border-soft:      var(--blue-200);
+  --frame-default:    var(--blue-500);
+  --frame-secondary:  var(--blue-900);
+  --frame-accent:     var(--orange-500);
+
+  /* status anchors */
+  --status-info:     var(--blue-500);
+  --status-success:  var(--green-700);
+  --status-warning:  var(--yellow-700);
+  --status-danger:   var(--red-500);
+
+  /* geometry — the central anatomy rule */
+  --inset-gap: 5px;
+  --inset-gap-sm: 4px;
+  --inner-radius: 5px;
+  --backdrop: rgba(4, 34, 37, 0.55);
+
+  /* elevation shadows */
+  --shadow-raised:  0 8px 24px rgba(4, 34, 37, 0.10);
+  --shadow-menu:    0 6px 20px rgba(4, 34, 37, 0.18);
+  --shadow-toast:   0 10px 30px rgba(4, 34, 37, 0.25);
+  --shadow-overlay: 0 24px 60px rgba(4, 34, 37, 0.40);
+  --shadow-tooltip: 0 6px 16px rgba(4, 34, 37, 0.35);
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --surface-page:     var(--blue-900);
+  --surface-elevated: var(--blue-700);
+  --surface-card:     var(--blue-800);
+  --surface-dark:     var(--blue-600);
+  --surface-inset:    var(--blue-800);
+
+  --text-body:      var(--grey-50);
+  --text-heading:   var(--blue-300);
+  --text-accent:    var(--blue-300);
+  --text-muted:     var(--grey-500);
+  --text-on-dark:   var(--grey-50);
+  --text-disabled:  var(--grey-600);
+  --text-placeholder: var(--grey-500);
+
+  --interactive-outer:        var(--blue-300);
+  --interactive-inner:        var(--blue-800);
+  --interactive-outer-hover:  var(--blue-100);
+  --interactive-inner-hover:  var(--blue-700);
+  --interactive-text:         var(--blue-300);
+
+  --logo-ink:        var(--grey-50);
+  --frame-default:   var(--grey-50);
+  --frame-secondary: var(--grey-500);
+  --frame-accent:    var(--blue-300);
+  --border-soft:     var(--grey-500);
+
+  color-scheme: dark;
+}
+
+/* ============================================================
+   3. SPACING / GEOMETRY / MOTION
+   ============================================================ */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  --container-max: 1080px;
+  --grid-gutter: 20px;
+  --frame-thickness: 28px;
+
+  --control-h: 44px;
+  --control-h-sm: 36px;
+  --control-h-tab: 40px;
+  --control-min-w: 140px;
+  --field-w: 280px;
+
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --stroke-heavy: 5px;
+
+  --dur-fast: 0.12s;
+  --dur-move: 0.14s;
+  --dur-slow: 0.22s;
+  --dur-row: 0.10s;
+  --ease-std: ease;
+}
+
+/* ============================================================
+   4. TYPOGRAPHY — self-hosted Croco (display) + Open Sans (body, via @fontsource)
+   ============================================================ */
+@font-face {
+  font-family: "Croco";
+  src: url("/fonts/Croco-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Croco";
+  src: url("/fonts/Croco-Italic.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Croco";
+  src: url("/fonts/Croco-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Croco";
+  src: url("/fonts/Croco-ExtraBold.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Croco";
+  src: url("/fonts/Croco-Thin.otf") format("opentype");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-display: "Croco", Georgia, serif;
+  --font-body: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --type-display: 400 48px/1.05 var(--font-display);
+  --type-h1:      800 36px/1.1  var(--font-display);
+  --type-h2:      700 28px/1.15 var(--font-display);
+  --type-h3:      400 22px/1.25 var(--font-display);
+  --type-body-md: 400 16px/1.55 var(--font-body);
+  --type-body-sm: 400 14px/1.5  var(--font-body);
+  --type-label:   600 12px/1.2  var(--font-body);
+  --type-caption: 300 11px/1.35 var(--font-body);
+
+  --tracking-label: 1.5px;
+}
+
+/* ============================================================
+   5. COMPATIBILITY ALIASES — old token names → new.
+   Transitional: keeps the pre-existing components/pages working while the
+   whole site migrates to the design-system names. Remove once every page
+   consumes the DS tokens directly.
+   ============================================================ */
+:root {
+  --bg: var(--surface-page);
+  --text: var(--text-body);
+  --text-detail: var(--text-heading);
+  --surface: var(--surface-card);
+  --surface-raised: var(--surface-elevated);
+  --on-dark: var(--text-on-dark);
+  --border: var(--border-soft);
+  --border-strong: var(--frame-default);
+  --accent: var(--frame-accent);
   --accent-strong: var(--orange-700);
   --accent-soft: var(--orange-100);
-  --focus-ring: var(--orange-500);
+  --focus-ring: var(--frame-accent);
 
-  /* Alert palette (info variant used by the learning-language notice) */
-  --info-bg: var(--blue-50);
-  --info-border: var(--blue-500);
-  --info-text: var(--blue-900);
-
-  /* --- Typography --------------------------------------------------------- */
-  /* Croco is a commercial display face. Until it is licensed + installed,
-     the geometric fallback (Josefin Sans) stands in. Swap the first family
-     only — nothing else needs to change. See README > Fonts. */
-  --font-display: "Croco", "Josefin Sans", system-ui, sans-serif;
-  --font-body: "Open Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-
-  --fs-display: 3rem;      /* 48 / 56 — hero */
-  --lh-display: 3.5rem;
-  --fs-h1: 2.25rem;        /* 36 / 40 */
-  --lh-h1: 2.5rem;
-  --fs-h2: 1.75rem;        /* 28 / 32 */
-  --lh-h2: 2rem;
-  --fs-h3: 1.375rem;       /* 22 / 24 — card title */
-  --lh-h3: 1.5rem;
-  --fs-body-lg: 1.125rem;  /* 18 / 24 */
-  --lh-body-lg: 1.5rem;
-  --fs-body: 1rem;         /* 16 / 20 */
-  --lh-body: 1.25rem;
-  --fs-body-sm: 0.875rem;  /* 14 / 16 */
-  --lh-body-sm: 1rem;
-  --fs-caption: 0.6875rem; /* 11 / 16 — absolute minimum */
-  --lh-caption: 1rem;
-
-  /* --- Spacing / geometry -------------------------------------------------- */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.5rem;
-  --space-6: 2rem;
-  --space-8: 3rem;
-  --space-10: 4rem;
-  --space-12: 6rem;
-  --measure: 68ch; /* readable line length */
-
-  /* "External straight, internal round": the signature anatomy.
-     Outer border is square (radius 0); the inner inset rectangle is rounded. */
-  --inner-inset: 5px;
-  --inner-radius: 5px;
+  --info-bg: var(--surface-elevated);
+  --info-border: var(--frame-default);
+  --info-text: var(--text-body);
 
   --border-w: 1.5px;
-  --transition: 160ms ease;
+  --transition: var(--dur-move) var(--ease-std);
+  --inner-inset: var(--inset-gap);
+  --measure: 68ch;
 
-  --shadow-raised: 0 2px 0 0 var(--blue-200);
-}
+  /* suit → area colour */
+  --suit-spades: var(--blue-500);
+  --suit-diamonds: var(--yellow-500);
+  --suit-hearts: var(--purple-500);
+  --suit-clubs: var(--orange-500);
 
-/* ============================================================================
-   Dark mode — set via [data-theme="dark"] (explicit toggle wins over OS pref)
-   ========================================================================== */
-:root[data-theme="dark"] {
-  --bg: var(--blue-800);
-  --text: var(--blue-50);
-  --text-detail: var(--blue-100);
-  --text-muted: var(--blue-200);
-  --surface: var(--blue-800);
-  --surface-raised: var(--blue-700);
-  --surface-dark: var(--blue-900);
-  --on-dark: var(--blue-50);
-  --border: var(--blue-600);
-  --border-strong: var(--blue-300);
-  --accent: var(--yellow-400);
-  --accent-strong: var(--yellow-500);
-  --accent-soft: var(--yellow-700);
-  --focus-ring: var(--yellow-400);
-
-  --info-bg: var(--blue-700);
-  --info-border: var(--blue-300);
-  --info-text: var(--blue-50);
-
-  --shadow-raised: 0 2px 0 0 var(--blue-900);
-}
-
-/* Follow the OS preference when the user has not made an explicit choice. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: var(--blue-800);
-    --text: var(--blue-50);
-    --text-detail: var(--blue-100);
-    --text-muted: var(--blue-200);
-    --surface: var(--blue-800);
-    --surface-raised: var(--blue-700);
-    --surface-dark: var(--blue-900);
-    --on-dark: var(--blue-50);
-    --border: var(--blue-600);
-    --border-strong: var(--blue-300);
-    --accent: var(--yellow-400);
-    --accent-strong: var(--yellow-500);
-    --accent-soft: var(--yellow-700);
-    --focus-ring: var(--yellow-400);
-    --info-bg: var(--blue-700);
-    --info-border: var(--blue-300);
-    --info-text: var(--blue-50);
-    --shadow-raised: 0 2px 0 0 var(--blue-900);
-  }
+  /* legacy font-size / line-height scale (maps to the DS type scale) */
+  --fs-display: 48px;  --lh-display: 52px;
+  --fs-h1: 36px;       --lh-h1: 40px;
+  --fs-h2: 28px;       --lh-h2: 32px;
+  --fs-h3: 22px;       --lh-h3: 28px;
+  --fs-body-lg: 18px;  --lh-body-lg: 28px;
+  --fs-body: 16px;     --lh-body: 25px;
+  --fs-body-sm: 14px;  --lh-body-sm: 21px;
+  --fs-caption: 11px;  --lh-caption: 16px;
 }

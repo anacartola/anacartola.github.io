@@ -2,6 +2,7 @@
 import { type Locale } from "../i18n";
 import { useTranslations, localizedPath } from "../i18n/utils";
 import { socialLinks } from "../data/site";
+import Icon from "./icons/Icon.astro";
 
 interface Props {
   locale: Locale;
@@ -10,9 +11,15 @@ const { locale } = Astro.props;
 const t = useTranslations(locale);
 const year = new Date().getFullYear();
 
+const mascots = [
+  { name: "IconsCartolaPersonagensBirdStyleOutline" as const, label: "Corvo" },
+  { name: "IconsCartolaPersonagensDogStyleOutline" as const, label: "Beagle" },
+  { name: "IconsCartolaPersonagensFireflyBugStyleOutline" as const, label: "Vaga-lume" },
+];
 const nav = [
   { href: "/projects", label: t.nav.projects },
   { href: "/blog", label: t.nav.blog },
+  { href: "/resources", label: t.nav.resources },
   { href: "/about", label: t.nav.about },
   { href: "/contact", label: t.nav.contact },
 ];
@@ -23,14 +30,20 @@ const socialLabel: Record<string, string> = {
 };
 ---
 
-<footer class="site-footer">
-  <div class="container site-footer__row">
-    <div>
-      <p class="site-footer__brand">{t.site.author}</p>
-      <p class="site-footer__tagline">{t.site.tagline}</p>
+<footer class="ftr">
+  <div class="container ftr__row">
+    <div class="ftr__mascots">
+      {
+        mascots.map((m) => (
+          <span class="ftr__mascot">
+            <Icon name={m.name} size={30} />
+            <small>{m.label}</small>
+          </span>
+        ))
+      }
     </div>
 
-    <nav class="site-footer__nav" aria-label={t.nav.menu}>
+    <nav class="ftr__links" aria-label={t.nav.menu}>
       <ul role="list">
         {
           nav.map((item) => (
@@ -39,78 +52,75 @@ const socialLabel: Record<string, string> = {
             </li>
           ))
         }
+        {
+          socialLinks.map((link) => (
+            <li>
+              <a href={link.href} rel="me noopener">
+                {socialLabel[link.key]}
+              </a>
+            </li>
+          ))
+        }
       </ul>
     </nav>
-
-    <ul class="site-footer__social" role="list">
-      {
-        socialLinks.map((link) => (
-          <li>
-            <a href={link.href} rel="me noopener">
-              {socialLabel[link.key]}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
   </div>
 
-  <div class="container site-footer__legal">
-    <p>© {year} {t.site.fullName}. {t.footer.rights} · {t.footer.builtWith}</p>
+  <div class="container ftr__meta">
+    <p>© {year} {t.site.fullName} · {t.footer.rights} · {t.footer.builtWith}</p>
   </div>
 </footer>
 
 <style>
-  .site-footer {
+  .ftr {
     margin-top: var(--space-12);
-    border-top: var(--border-w) solid var(--border);
-    background: var(--surface-dark);
-    color: var(--on-dark);
     padding-block: var(--space-8) var(--space-5);
+    border-top: var(--stroke-heavy) solid var(--frame-secondary);
   }
-  .site-footer__row {
+  .ftr__row {
     display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
     flex-wrap: wrap;
     gap: var(--space-8);
-    justify-content: space-between;
   }
-  .site-footer__brand {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.25rem;
-    margin: 0;
-    color: var(--on-dark);
+  .ftr__mascots {
+    display: flex;
+    gap: var(--space-6);
   }
-  .site-footer__tagline {
-    margin: 0.25rem 0 0;
-    font-size: var(--fs-body-sm);
-    color: var(--blue-100);
-  }
-  .site-footer__nav ul,
-  .site-footer__social {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  .ftr__mascot {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--frame-default);
   }
-  .site-footer a {
-    color: var(--blue-100);
+  .ftr__mascot small {
+    font: var(--type-caption);
+    color: var(--text-muted);
+  }
+  .ftr__links ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .ftr__links a {
+    font: var(--type-body-sm);
+    color: var(--interactive-text);
     text-decoration: none;
   }
-  .site-footer a:hover {
-    color: var(--accent);
+  .ftr__links a:hover {
+    color: var(--frame-accent);
   }
-  .site-footer__legal {
+  .ftr__meta {
     margin-top: var(--space-6);
-    padding-top: var(--space-4);
-    border-top: 1px solid var(--blue-700);
   }
-  .site-footer__legal p {
+  .ftr__meta p {
     margin: 0;
-    font-size: var(--fs-caption);
-    color: var(--blue-200);
+    font: var(--type-caption);
+    color: var(--text-muted);
     max-width: none;
   }
 </style>

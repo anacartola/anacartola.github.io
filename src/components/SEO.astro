@@ -65,14 +65,20 @@ const fullTitle = title;
 
 <link rel="sitemap" href="/sitemap-index.xml" />
 
-{/* No-flash theme init: apply the stored theme before paint. */}
+{/* No-flash theme init. Order: saved choice -> prefers light -> dark (brand default). */}
 <script is:inline>
   (function () {
     try {
-      var t = localStorage.getItem("theme");
-      if (t === "light" || t === "dark") {
-        document.documentElement.setAttribute("data-theme", t);
-      }
-    } catch (e) {}
+      var t = localStorage.getItem("accartola-theme");
+      var theme =
+        t === "light" || t === "dark"
+          ? t
+          : matchMedia("(prefers-color-scheme: light)").matches
+            ? "light"
+            : "dark";
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (e) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
   })();
 </script>

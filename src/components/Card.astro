@@ -1,9 +1,8 @@
 ---
 /**
- * Card — corner-only Art Déco ornament (four L-brackets, no full border).
- * Corners turn copper (orange-500) on hover; the Highlight variant fixes them
- * copper. Variants: default (brown-50) · elevated (blue-50) · dark (blue-900)
- * · highlight (copper corners always).
+ * Card — corner-only Art Déco brackets (Component/Corner geometry from the DS).
+ * The body is open; corners turn copper on hover (Highlight fixes them copper).
+ * API preserved: `variant` (default|elevated|dark|highlight), `href`, `class`, slot.
  */
 interface Props {
   variant?: "default" | "elevated" | "dark" | "highlight";
@@ -12,97 +11,93 @@ interface Props {
 }
 const { variant = "default", href, class: className } = Astro.props;
 const Tag = href ? "a" : "div";
+// Corner authored bottom-left; reflect to each vertex.
+const corners = [
+  { pos: "tl", t: "scale(1,-1)" },
+  { pos: "tr", t: "scale(-1,-1)" },
+  { pos: "bl", t: "scale(1,1)" },
+  { pos: "br", t: "scale(-1,1)" },
+];
 ---
 
 <Tag
-  class:list={["card", `card--${variant}`, href && "card--link", className]}
+  class:list={["accard", `accard--${variant}`, href && "accard--link", className]}
   href={href}
 >
-  <span class="card-corner card-corner--tl" aria-hidden="true"></span>
-  <span class="card-corner card-corner--tr" aria-hidden="true"></span>
-  <span class="card-corner card-corner--bl" aria-hidden="true"></span>
-  <span class="card-corner card-corner--br" aria-hidden="true"></span>
-  <div class="card__body"><slot /></div>
+  {
+    corners.map((c) => (
+      <svg
+        class={`accard-corner accard-corner--${c.pos}`}
+        width="22"
+        height="22"
+        viewBox="0 0 28 28"
+        fill="currentColor"
+        aria-hidden="true"
+        style={`transform:${c.t};transform-origin:center`}
+      >
+        <g transform="translate(3,3)">
+          <path d="M 5 12 C 5 14.761 7.239 17 10 17 L 22 17 L 22 22 L 0 22 L 0 0 L 5 0 L 5 12 Z" />
+          <rect width="7" height="7" transform="matrix(0.707,0.707,-0.707,0.707,13.5,3.55)" />
+        </g>
+      </svg>
+    ))
+  }
+  <div class="accard-body"><slot /></div>
 </Tag>
 
 <style>
-  .card {
+  .accard {
     position: relative;
+    box-sizing: border-box;
     display: block;
-    padding: var(--space-5);
-    background: var(--surface);
-    color: inherit;
+    padding: 28px;
+    border-radius: 0;
+    background: var(--surface-card);
+    color: var(--text-body);
     text-decoration: none;
-    --corner: var(--border-strong);
-    transition: transform var(--transition);
+    --cc: var(--frame-default);
+    transition:
+      transform var(--dur-move) var(--ease-std),
+      box-shadow var(--dur-move) var(--ease-std);
   }
-  .card--elevated {
-    background: var(--surface-raised);
+  .accard--elevated {
+    background: var(--surface-elevated);
     box-shadow: var(--shadow-raised);
   }
-  .card--dark {
+  .accard--dark {
     background: var(--surface-dark);
-    color: var(--on-dark);
-    --corner: var(--blue-100);
+    color: var(--blue-50);
   }
-  .card--dark :global(h1),
-  .card--dark :global(h2),
-  .card--dark :global(h3) {
-    color: var(--on-dark);
-  }
-  .card--highlight {
-    --corner: var(--accent); /* copper fixed */
+  .accard--highlight {
+    --cc: var(--orange-500);
   }
 
-  .card__body {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Corner brackets */
-  .card-corner {
+  .accard-corner {
     position: absolute;
-    width: 16px;
-    height: 16px;
-    z-index: 2;
-    transition: border-color var(--transition);
+    color: var(--cc);
+    transition: color var(--dur-move) var(--ease-std);
   }
-  .card-corner--tl {
-    top: 0;
-    left: 0;
-    border-top: 2px solid var(--corner);
-    border-left: 2px solid var(--corner);
-  }
-  .card-corner--tr {
-    top: 0;
-    right: 0;
-    border-top: 2px solid var(--corner);
-    border-right: 2px solid var(--corner);
-  }
-  .card-corner--bl {
-    bottom: 0;
-    left: 0;
-    border-bottom: 2px solid var(--corner);
-    border-left: 2px solid var(--corner);
-  }
-  .card-corner--br {
-    bottom: 0;
-    right: 0;
-    border-bottom: 2px solid var(--corner);
-    border-right: 2px solid var(--corner);
-  }
+  .accard-corner--tl { top: 6px; left: 6px; }
+  .accard-corner--tr { top: 6px; right: 6px; }
+  .accard-corner--bl { bottom: 6px; left: 6px; }
+  .accard-corner--br { bottom: 6px; right: 6px; }
 
-  /* Hover: corners go copper (link cards only lift slightly). */
-  .card--link:hover .card-corner,
-  .card--link:focus-visible .card-corner {
-    border-color: var(--accent);
-  }
-  .card--link:hover,
-  .card--link:focus-visible {
+  .accard-body { position: relative; }
+
+  .accard--link:hover,
+  .accard--link:focus-visible {
     transform: translateY(-2px);
   }
-  .card--link:focus-visible {
-    outline: 2px solid var(--focus-ring);
+  .accard--default.accard--link:hover,
+  .accard--elevated.accard--link:hover,
+  .accard--dark.accard--link:hover,
+  .accard--default.accard--link:focus-visible,
+  .accard--elevated.accard--link:focus-visible,
+  .accard--dark.accard--link:focus-visible {
+    --cc: var(--orange-500);
+  }
+  .accard--link:focus-visible {
+    outline: 2px solid var(--frame-accent);
     outline-offset: 3px;
   }
 </style>

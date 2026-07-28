@@ -1,0 +1,18 @@
+---
+import type { GetStaticPaths } from "astro";
+import ResourceDetailPage from "../../../components/pages/ResourceDetailPage.astro";
+import { getResourceSlugs } from "../../../lib/resources";
+import { SECONDARY_LOCALES } from "../../../i18n";
+
+// slug × locale secundário — mesma cartesiana das outras rotas [lang]/.../[...slug].
+export const getStaticPaths = (async () => {
+  const slugs = await getResourceSlugs();
+  return SECONDARY_LOCALES.flatMap((lang) =>
+    slugs.map((slug) => ({ params: { lang, slug } })),
+  );
+}) satisfies GetStaticPaths;
+
+const { lang, slug } = Astro.params;
+---
+
+<ResourceDetailPage locale={lang as any} slug={slug} />

@@ -1,0 +1,104 @@
+---
+import { render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { type Locale } from "../../i18n";
+import { useTranslations } from "../../i18n/utils";
+import { getResourceForLocale } from "../../lib/resources";
+import Badge from "../Badge.astro";
+import Button from "../Button.astro";
+import SuitIcon from "../symbols/SuitIcon.astro";
+
+interface Props {
+  locale: Locale;
+  slug: string;
+}
+const { locale, slug } = Astro.props;
+const item = await getResourceForLocale(slug, locale);
+if (!item) {
+  return new Response(null, { status: 404 });
+}
+const t = useTranslations(locale);
+const { entry, isFallback, availableLocales } = item;
+const data = entry.data;
+const { Content } = await render(entry);
+const updated = data.updatedDate
+  ? new Intl.DateTimeFormat(locale === "pt" ? "pt-BR" : locale, { day: "2-digit", month: "short", year: "numeric" }).format(data.updatedDate)
+  : null;
+---
+
+<BaseLayout
+  locale={locale}
+  route={`/resources/${slug}`}
+  title={`${data.title} — ${t.site.author}`}
+  description={data.summary}
+  availableLocales={availableLocales}
+  type="article"
+>
+  <article class="container-narrow resource">
+    {
+      isFallback && (
+        <p class="fallback-note">
+          {t.language.notAvailable} {locale.toUpperCase()}. {t.language.fallbackToEn}
+        </p>
+      )
+    }
+
+    <header class="resource__header">
+      <div class="resource__kind">
+        {data.suit && <SuitIcon suit={data.suit} size={16} />}
+        <span>{t.resources.kind[data.kind]}</span>
+        <span class={`status status--${data.status}`}>{t.resources.status[data.status]}</span>
+      </div>
+      <h1>{data.title}</h1>
+      <p class="resource__summary">{data.summary}</p>
+
+      {
+        data.tags.length > 0 && (
+          <ul class="resource__tags" role="list">
+            {data.tags.map((tag) => <li><Badge label={tag} /></li>)}
+          </ul>
+        )
+      }
+
+      {
+        (data.launchUrl || data.repo) && (
+          <div class="resource__links">
+            {data.launchUrl && (
+              <Button href={data.launchUrl} variant="primary">{t.resources.launch}</Button>
+            )}
+            {data.repo && (
+              <Button href={data.repo} variant="secondary">{t.resources.repo}</Button>
+            )}
+          </div>
+        )
+      }
+      {updated && <p class="resource__updated">{t.resources.updated} {updated}</p>}
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .resource { padding-block: var(--space-8); }
+  .fallback-note {
+    font-size: var(--fs-body-sm); color: var(--text-muted);
+    border-left: 3px solid var(--border); padding-left: var(--space-3);
+  }
+  .resource__kind {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    color: var(--text-detail); font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; font-size: var(--fs-caption); margin-bottom: var(--space-2);
+  }
+  .status { padding: 0.1rem 0.45rem; border: var(--border-w) solid var(--border); letter-spacing: 0.5px; }
+  .status--live { color: var(--accent); border-color: var(--accent); }
+  .resource__summary { font-size: var(--fs-body-lg); color: var(--text-muted); }
+  .resource__tags {
+    display: flex; flex-wrap: wrap; gap: var(--space-2);
+    margin: var(--space-4) 0 0; padding: 0; list-style: none;
+  }
+  .resource__links { display: flex; gap: var(--space-4); flex-wrap: wrap; margin-top: var(--space-5); }
+  .resource__updated { margin-top: var(--space-4); font-size: var(--fs-body-sm); color: var(--text-muted); }
+</style>

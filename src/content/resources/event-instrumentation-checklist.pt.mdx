@@ -1,0 +1,26 @@
+---
+title: "Checklist de instrumentação de eventos"
+summary: "Antes de fazer deploy de um evento novo: naming, propriedades, governança e validação — item por item."
+lang: "pt"
+kind: "guia"
+suit: "clubs"
+tags: ["Tracking", "Governança", "Pendo"]
+status: "beta"
+order: 3
+updatedDate: 2026-06-20
+---
+
+Um checklist para revisar instrumentação **antes** do deploy, quando ainda é
+barato corrigir. Cobre o ciclo do evento, do naming à validação em produção.
+
+## O ciclo
+
+- **Naming** — segue a convenção? Objeto + ação, minúsculo, sem espaço.
+- **Propriedades** — todas necessárias, nenhuma legada ou fora do padrão.
+- **Governança** — o evento existe no catálogo? Tem dono?
+- **Validação** — as propriedades instrumentadas batem com o cadastrado?
+
+## Saída
+
+Um relatório de validação por evento: aprovado, ou pendências específicas para
+resolver antes de subir.

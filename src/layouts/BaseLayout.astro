@@ -6,6 +6,7 @@ import SEO from "../components/SEO.astro";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import LearningLanguageNotice from "../components/LearningLanguageNotice.astro";
+import DecoFrame from "../components/DecoFrame.astro";
 
 interface Props {
   title: string;
@@ -47,14 +48,63 @@ const t = useTranslations(locale);
       publishedTime={publishedTime}
       modifiedTime={modifiedTime}
     />
+    {/* Browser-language detection — only on the bare root. Sends the visitor to
+        their locale (pt stays at /, en/fr/zh get prefixed); an unknown language
+        falls back to English. Honours a saved choice; guarded against loops. */}
+    <script is:inline>
+      (function () {
+        try {
+          if ((location.pathname || "/").replace(/\/+$/, "") !== "") return;
+          if (sessionStorage.getItem("accartola-lang-routed")) return;
+          sessionStorage.setItem("accartola-lang-routed", "1");
+          var known = ["pt", "en", "fr", "zh"];
+          var saved = localStorage.getItem("accartola-lang");
+          var target = known.indexOf(saved) >= 0 ? saved : null;
+          if (!target) {
+            var navs = navigator.languages || [navigator.language || "en"];
+            for (var i = 0; i < navs.length; i++) {
+              var base = (navs[i] || "").toLowerCase().split("-")[0];
+              if (known.indexOf(base) >= 0) { target = base; break; }
+            }
+            if (!target) target = "en";
+          }
+          if (target && target !== "pt") location.replace("/" + target);
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">{t.nav.skipToContent}</a>
-    <Nav locale={locale} route={route} />
-    <LearningLanguageNotice locale={locale} />
-    <main id="main">
-      <slot />
-    </main>
-    <Footer locale={locale} />
+    <div class="ac-page">
+      <DecoFrame>
+        <div class="ac-frame-pad">
+          <Nav locale={locale} route={route} />
+          <LearningLanguageNotice locale={locale} />
+          <main id="main">
+            <slot />
+          </main>
+          <Footer locale={locale} />
+        </div>
+      </DecoFrame>
+    </div>
+
+    <style>
+      .ac-page {
+        width: 100%;
+        max-width: var(--container-max);
+        margin-inline: auto;
+        padding: var(--space-6) var(--space-5) var(--space-10);
+        box-sizing: border-box;
+      }
+      .ac-frame-pad {
+        padding: clamp(16px, 4vw, 34px);
+      }
+      /* Inside the frame the page already owns its width; neutralise the extra
+         container inset so sections use the frame's inner width. */
+      .ac-frame-pad :global(.container) {
+        max-width: none;
+        padding-inline: 0;
+      }
+    </style>
   </body>
 </html>

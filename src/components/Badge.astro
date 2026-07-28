@@ -1,11 +1,14 @@
 ---
 import SuitIcon from "./symbols/SuitIcon.astro";
 
+/**
+ * Badge — DS anatomy: square outer + inner rounded (r4), 24px tall, uppercase
+ * micro-label. API preserved: `suit` (colours + optional glyph), `label`, `icon`.
+ * Plain badges (no suit) use the neutral pair.
+ */
 type Suit = "spades" | "diamonds" | "hearts" | "clubs";
 interface Props {
-  /** When set, the badge is a suit/area badge and takes the suit colour. */
   suit?: Suit;
-  /** Optional icon toggle for suit badges. */
   icon?: boolean;
   label: string;
   class?: string;
@@ -13,45 +16,38 @@ interface Props {
 const { suit, icon = false, label, class: className } = Astro.props;
 ---
 
-<span class:list={["badge", suit && "badge--suit", className]} data-suit={suit}>
-  {suit && icon && <SuitIcon suit={suit} size={10} />}
-  {label}
+<span class:list={["acbadge", suit && "acbadge--suit", className]} data-suit={suit}>
+  <span class="acbadge__inner">
+    {suit && icon && <SuitIcon suit={suit} size={10} />}
+    {label}
+  </span>
 </span>
 
 <style>
-  .badge {
+  .acbadge {
+    display: inline-flex;
+    box-sizing: border-box;
+    padding: 3px;
+    height: 24px;
+    border-radius: 0;
+    background: var(--o, var(--blue-300));
+    vertical-align: middle;
+  }
+  .acbadge__inner {
     display: inline-flex;
     align-items: center;
-    gap: 0.25em;
-    font-family: var(--font-body);
-    /* Badge spec: 10px uppercase, tracked. Non-body, decorative label. */
-    font-size: 10px;
-    line-height: 1.4;
-    font-weight: 700;
-    letter-spacing: 1.5px;
+    gap: 4px;
+    background: var(--i, var(--blue-50));
+    border-radius: var(--radius-sm);
+    padding: 0 8px;
+    font: 600 10px/1 var(--font-body);
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
-    padding: 0.25rem 0.5rem;
-    color: var(--text-detail);
-    border: 1px solid var(--border);
-    border-radius: 0; /* external straight */
-    background: transparent;
+    color: var(--blue-900);
+    white-space: nowrap;
   }
-
-  /* Suit badge: coloured by the suit token (categorisation, not decoration). */
-  .badge--suit[data-suit="spades"] {
-    color: var(--suit-spades);
-    border-color: var(--suit-spades);
-  }
-  .badge--suit[data-suit="diamonds"] {
-    color: var(--yellow-700); /* readable text weight of the diamond hue */
-    border-color: var(--suit-diamonds);
-  }
-  .badge--suit[data-suit="hearts"] {
-    color: var(--suit-hearts);
-    border-color: var(--suit-hearts);
-  }
-  .badge--suit[data-suit="clubs"] {
-    color: var(--suit-clubs);
-    border-color: var(--suit-clubs);
-  }
+  .acbadge--suit[data-suit="spades"] { --o: var(--blue-500); --i: var(--blue-50); }
+  .acbadge--suit[data-suit="diamonds"] { --o: var(--yellow-700); --i: var(--yellow-100); }
+  .acbadge--suit[data-suit="hearts"] { --o: var(--purple-500); --i: var(--purple-100); }
+  .acbadge--suit[data-suit="clubs"] { --o: var(--orange-500); --i: var(--orange-100); }
 </style>

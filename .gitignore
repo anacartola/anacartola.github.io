@@ -17,3 +17,7 @@ pnpm-debug.log*
 Thumbs.db
 .vscode/*
 !.vscode/extensions.json
+
+# design-system source archive (reference, not built)
+*.zip
+"A. Cartola Design System.zip"

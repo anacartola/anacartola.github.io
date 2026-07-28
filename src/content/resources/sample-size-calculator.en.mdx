@@ -1,0 +1,28 @@
+---
+title: "Sample size calculator"
+summary: "How many users per variant you need to detect an effect with confidence — without opening a spreadsheet."
+lang: "en"
+kind: "calculadora"
+suit: "spades"
+tags: ["Experimentation", "A/B test", "Statistics"]
+status: "live"
+featured: true
+order: 1
+updatedDate: 2026-05-12
+---
+
+Enter your baseline conversion rate, the minimum detectable effect (MDE) worth
+caring about, and the significance level. The calculator returns the sample size
+per variant and the estimated test duration given your weekly traffic.
+
+## When to use it
+
+Before shipping any experiment. Running an underpowered A/B test is worse than
+not running one: you spend the traffic and still draw the wrong conclusion.
+
+## What it assumes
+
+- Two-tailed test, two variants (control + treatment).
+- 80% statistical power by default (adjustable).
+- Independent conversions — for per-session metrics with repeats, treat the
+  result as a floor, not a ceiling.

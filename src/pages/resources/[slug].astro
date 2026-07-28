@@ -1,0 +1,14 @@
+---
+import type { GetStaticPaths } from "astro";
+import ResourceDetailPage from "../../components/pages/ResourceDetailPage.astro";
+import { getResourceSlugs } from "../../lib/resources";
+
+export const getStaticPaths = (async () => {
+  const slugs = await getResourceSlugs();
+  return slugs.map((slug) => ({ params: { slug } }));
+}) satisfies GetStaticPaths;
+
+const { slug } = Astro.params;
+---
+
+<ResourceDetailPage locale="pt" slug={slug} />

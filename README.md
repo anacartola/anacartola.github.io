@@ -228,6 +228,61 @@ Out of scope for the build. To set up the 301 redirect:
 - [ ] Add real projects and posts, and confirm the build passes (the relation
       validator will catch broken related slugs).
 
+## Guia rápido (PT): publicar um artigo, projeto ou recurso
+
+Você não edita HTML nem layout para publicar conteúdo. Cada item é um arquivo de
+texto (`.mdx`) numa pasta, e o Astro gera a página, a listagem e o RSS sozinho.
+
+### Publicar um artigo do blog
+
+1. Crie um arquivo em `src/content/posts/`, por exemplo
+   `meu-artigo.pt.mdx`. O nome antes do `.pt` é o slug (a URL vira
+   `/blog/meu-artigo`).
+2. Comece com o cabeçalho (frontmatter) entre `---`:
+
+   ```markdown
+   ---
+   title: "Título do artigo"
+   description: "Uma frase que aparece no card e no Google."
+   lang: pt
+   pubDate: 2026-07-28
+   tags: ["analytics", "sql"]
+   suit: spades          # opcional: spades ♠ · diamonds ♦ · hearts ♥ · clubs ♣
+   relatedProject: "spades-churn-measurement"  # opcional: liga a um projeto
+   draft: false          # true = fica invisível na publicação
+   ---
+
+   Aqui vai o texto, em Markdown normal.
+   ```
+
+3. Escreva o texto abaixo do cabeçalho. Dica: no corpo, chaves `{` são código.
+   Se precisar de chave literal, escreva `\{`.
+4. Salve, faça `git add`, `git commit` e `git push`. O GitHub publica sozinho.
+
+### Traduzir
+
+Copie o arquivo e troque o sufixo do idioma: `meu-artigo.en.mdx` (e o campo
+`lang: en`). Se um idioma não existir, o site cai para o inglês automaticamente e
+marca o card. O slug (parte antes do `.xx`) precisa ser o mesmo nas traduções.
+
+### Projetos e recursos
+
+Igual aos posts, em `src/content/projects/` e `src/content/resources/`. Projetos
+usam `suit`, `stack`, `role`, `status` (`active`/`review`/`draft`). Recursos
+usam `kind` (`calculadora`/`template`/`ferramenta`/`guia`) e um `launchUrl`
+opcional para uma ferramenta externa (ex: uma calculadora hospedada).
+
+### Rodar e ver antes de publicar
+
+```bash
+npm run dev
+```
+
+Abra `http://localhost:4321`. Rascunhos (`draft: true`) aparecem aqui, mas somem
+no `npm run build` (produção). Sempre rode `npm run build` antes de publicar: se
+um `relatedProject`/`relatedPosts` apontar para um slug que não existe, o build
+falha de propósito, com a mensagem dizendo qual arquivo corrigir.
+
 ## Code conventions (PONYTAIL)
 
 Prefer the standard library and native platform features over dependencies, and

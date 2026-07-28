@@ -1,109 +1,118 @@
 ---
 /**
- * DecoFrame — Art Déco double-line frame with ornamented corners
- * (L-bracket + 45° diamond) in blue-500. Use around CTAs, forms, highlights.
+ * DecoFrame — Art Déco page border that WRAPS content and grows with it
+ * (never fixed). Ported 1:1 from the design system (prism variant, medallions
+ * on the side edges). Geometry from Figma Border/Corner/Prism + Edge H|V +
+ * Middle/Prism. Colour flows through `color` -> --fc.
+ * API: `color` (default frame-default), `class`, slot.
  */
 interface Props {
-  as?: string;
-  tone?: "default" | "dark";
+  color?: string;
   class?: string;
 }
-const { as: Tag = "div", tone = "default", class: className } = Astro.props;
+const { color = "var(--frame-default)", class: className } = Astro.props;
+
+const CORNER =
+  `<path d="M 28 5 L 10 5 C 7.239 5 5 7.239 5 10 L 5 28 L 0 28 L 0 0 L 28 0 L 28 5 Z" fill-rule="nonzero"/>` +
+  `<path d="M 0 5 C 0 2.239 2.239 0 5 0 L 5 5 L 0 5 Z" transform="translate(23,23)" fill-rule="nonzero"/>` +
+  `<rect x="23" y="8" width="5" height="2"/><rect x="23" y="18" width="5" height="2"/>` +
+  `<rect x="8" y="23" width="2" height="5"/><rect x="18" y="23" width="2" height="5"/>` +
+  `<rect width="7" height="7" transform="matrix(0.707,-0.707,0.707,0.707,9.05,13.95)"/>`;
+const MIDDLE =
+  `<path d="M 28 0 L 28 28 L 0 28 L 0 23 L 18 23 C 20.761 23 23 20.761 23 18 L 23 10 C 23 7.239 20.761 5 18 5 L 0 5 L 0 0 L 28 0 Z" fill-rule="nonzero"/>` +
+  `<path d="M 6 13.95 L 10.95 9 L 15.899 13.95 L 10.95 18.899 L 6 13.95 Z" fill-rule="nonzero"/>`;
+
+const corners = [
+  { pos: "tl", t: "scale(1,1)" },
+  { pos: "tr", t: "scale(-1,1)" },
+  { pos: "bl", t: "scale(1,-1)" },
+  { pos: "br", t: "scale(-1,-1)" },
+];
 ---
 
-<Tag class:list={["decoframe", `decoframe--${tone}`, className]}>
-  <span class="deco-corner deco-corner--tl" aria-hidden="true"></span>
-  <span class="deco-corner deco-corner--tr" aria-hidden="true"></span>
-  <span class="deco-corner deco-corner--bl" aria-hidden="true"></span>
-  <span class="deco-corner deco-corner--br" aria-hidden="true"></span>
-  <div class="decoframe__inner"><slot /></div>
-</Tag>
+<div class:list={["acdf", className]} style={`--fc:${color}`}>
+  <svg class="acdf-corner" width="28" height="28" viewBox="0 0 28 28" fill="var(--fc)" aria-hidden="true" style={`transform:${corners[0].t}`} set:html={CORNER} />
+  <div class="acdf-edge-h">
+    <span class="acdf-h"></span><span class="acdf-h"></span>
+  </div>
+  <svg class="acdf-corner" width="28" height="28" viewBox="0 0 28 28" fill="var(--fc)" aria-hidden="true" style={`transform:${corners[1].t}`} set:html={CORNER} />
+
+  <div class="acdf-edge-v">
+    <span class="acdf-v"></span>
+    <svg class="acdf-mid" width="28" height="28" viewBox="0 0 28 28" fill="var(--fc)" aria-hidden="true" set:html={MIDDLE} />
+    <span class="acdf-v"></span>
+  </div>
+  <div class="acdf-content"><slot /></div>
+  <div class="acdf-edge-v flip">
+    <span class="acdf-v"></span>
+    <svg class="acdf-mid" width="28" height="28" viewBox="0 0 28 28" fill="var(--fc)" aria-hidden="true" set:html={MIDDLE} />
+    <span class="acdf-v"></span>
+  </div>
+
+  <svg class="acdf-corner" width="28" height="28" viewBox="0 0 28 28" fill="var(--fc)" aria-hidden="true" style={`transform:${corners[2].t}`} set:html={CORNER} />
+  <div class="acdf-edge-h flip">
+    <span class="acdf-h"></span><span class="acdf-h"></span>
+  </div>
+  <svg class="acdf-corner" width="28" height="28" viewBox="0 0 28 28" fill="var(--fc)" aria-hidden="true" style={`transform:${corners[3].t}`} set:html={CORNER} />
+</div>
 
 <style>
-  .decoframe {
+  .acdf {
+    display: grid;
+    grid-template-columns: 28px 1fr 28px;
+    grid-template-rows: 28px 1fr 28px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .acdf-corner {
+    display: block;
+    transform-origin: center;
+  }
+  .acdf-h {
+    height: 28px;
+    flex: 1;
+    min-width: 0;
+    background-repeat: no-repeat;
+    background-size: 100% 28px;
+    background-image: linear-gradient(
+      to bottom,
+      var(--fc) 0 5px, transparent 5px 8px, var(--fc) 8px 10px,
+      transparent 10px 18px, var(--fc) 18px 20px, transparent 20px 23px, var(--fc) 23px 28px
+    );
+  }
+  .acdf-v {
+    width: 28px;
+    flex: 1;
+    min-height: 0;
+    background-repeat: no-repeat;
+    background-size: 28px 100%;
+    background-image: linear-gradient(
+      to right,
+      var(--fc) 0 5px, transparent 5px 8px, var(--fc) 8px 10px,
+      transparent 10px 18px, var(--fc) 18px 20px, transparent 20px 23px, var(--fc) 23px 28px
+    );
+  }
+  .acdf-edge-h {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    overflow: visible;
+  }
+  .acdf-edge-v {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    overflow: visible;
+  }
+  .acdf-edge-h.flip { transform: scaleY(-1); }
+  .acdf-edge-v.flip { transform: scaleX(-1); }
+  .acdf-mid { display: block; flex: none; }
+  .acdf-content {
     position: relative;
-    border: var(--border-w) solid var(--border-strong);
-    border-radius: 0;
-    padding: var(--space-6);
-    --deco-line: var(--border-strong);
-  }
-  /* second (inner) line */
-  .decoframe::before {
-    content: "";
-    position: absolute;
-    inset: 5px;
-    border: 1px solid var(--deco-line);
-    pointer-events: none;
-  }
-  .decoframe--dark {
-    background: var(--surface-dark);
-    color: var(--on-dark);
-    --deco-line: var(--blue-100);
-  }
-  .decoframe--dark :global(h1),
-  .decoframe--dark :global(h2),
-  .decoframe--dark :global(h3) {
-    color: var(--on-dark);
-  }
-
-  .decoframe__inner {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Corner ornament: L-bracket (borders) + 45° diamond (rotated square). */
-  .deco-corner {
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    z-index: 2;
-  }
-  .deco-corner::after {
-    content: "";
-    position: absolute;
-    width: 5px;
-    height: 5px;
-    background: var(--deco-line);
-    transform: rotate(45deg);
-  }
-  .deco-corner--tl {
-    top: -1px;
-    left: -1px;
-    border-top: 2px solid var(--deco-line);
-    border-left: 2px solid var(--deco-line);
-  }
-  .deco-corner--tl::after {
-    top: 6px;
-    left: 6px;
-  }
-  .deco-corner--tr {
-    top: -1px;
-    right: -1px;
-    border-top: 2px solid var(--deco-line);
-    border-right: 2px solid var(--deco-line);
-  }
-  .deco-corner--tr::after {
-    top: 6px;
-    right: 6px;
-  }
-  .deco-corner--bl {
-    bottom: -1px;
-    left: -1px;
-    border-bottom: 2px solid var(--deco-line);
-    border-left: 2px solid var(--deco-line);
-  }
-  .deco-corner--bl::after {
-    bottom: 6px;
-    left: 6px;
-  }
-  .deco-corner--br {
-    bottom: -1px;
-    right: -1px;
-    border-bottom: 2px solid var(--deco-line);
-    border-right: 2px solid var(--deco-line);
-  }
-  .deco-corner--br::after {
-    bottom: 6px;
-    right: 6px;
+    min-width: 0;
+    min-height: 0;
   }
 </style>
