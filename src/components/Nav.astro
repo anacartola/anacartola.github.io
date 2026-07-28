@@ -30,13 +30,10 @@ const isActive = (r: string) =>
     <ThemeToggle locale={locale} />
   </div>
 
-  <a class="brandhdr__brand" href={localizedPath("/", locale)} aria-label={t.site.author}>
-    <span class="brandhdr__mark" aria-hidden="true"></span>
-    <span class="brandhdr__name">{t.site.author}</span>
-  </a>
+  <a class="brandhdr__name" href={localizedPath("/", locale)}>{t.site.author}</a>
 
   <nav class="brandhdr__nav" aria-label={t.nav.menu}>
-    <span class="brandhdr__arrow" aria-hidden="true">&#9658;</span>
+    <span class="caret" aria-hidden="true">&#9658;</span>
     <ul role="list">
       {
         items.map((item) => (
@@ -52,7 +49,7 @@ const isActive = (r: string) =>
         ))
       }
     </ul>
-    <span class="brandhdr__arrow" aria-hidden="true">&#9668;</span>
+    <span class="caret" aria-hidden="true">&#9668;</span>
   </nav>
 
   <div class="brandhdr__rule" aria-hidden="true"></div>
@@ -65,7 +62,8 @@ const isActive = (r: string) =>
     flex-direction: column;
     align-items: center;
     gap: var(--space-2);
-    padding: var(--space-2) 0 var(--space-4);
+    /* top padding clears the crowned cartola hanging from the frame top */
+    padding: 44px 0 14px;
   }
   .brandhdr__tools {
     position: absolute;
@@ -75,37 +73,25 @@ const isActive = (r: string) =>
     align-items: center;
     gap: var(--space-3);
   }
-  .brandhdr__brand {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    text-decoration: none;
-  }
-  .brandhdr__mark {
-    display: block;
-    width: 30px;
-    height: 46px;
-    background: var(--logo-ink);
-    -webkit-mask: url("/logo/cartola-outline.svg") no-repeat center / contain;
-    mask: url("/logo/cartola-outline.svg") no-repeat center / contain;
-  }
   .brandhdr__name {
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: 34px;
+    font-size: 40px;
     letter-spacing: 0.02em;
     color: var(--text-body);
     line-height: 1;
+    text-decoration: none;
   }
-  .brandhdr__brand:hover .brandhdr__name {
+  .brandhdr__name:hover {
     color: var(--frame-accent);
   }
   .brandhdr__nav {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-1);
     flex-wrap: wrap;
     justify-content: center;
+    margin-top: var(--space-1);
   }
   .brandhdr__nav ul {
     display: flex;
@@ -117,20 +103,20 @@ const isActive = (r: string) =>
     flex-wrap: wrap;
     justify-content: center;
   }
-  .brandhdr__arrow {
-    color: var(--frame-default);
+  .caret {
+    color: var(--frame-accent);
+    display: inline-flex;
+    padding: 0 10px;
     font-size: 13px;
-    padding: 0 var(--space-2);
   }
   .brandhdr__link {
-    display: inline-flex;
-    align-items: center;
-    height: var(--control-h-tab);
-    padding: 0 12px;
-    font: 600 14px/1 var(--font-body);
-    color: var(--interactive-text);
+    font: var(--type-label);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-body);
     text-decoration: none;
-    border-bottom: var(--stroke-heavy) solid transparent;
+    padding: 6px 10px;
+    border-bottom: 2px solid transparent;
     transition:
       color var(--dur-fast) var(--ease-std),
       border-color var(--dur-fast) var(--ease-std);
@@ -141,15 +127,15 @@ const isActive = (r: string) =>
     border-color: var(--frame-accent);
   }
   .brandhdr__link.is-active {
-    color: var(--text-body);
-    border-color: var(--frame-secondary);
+    color: var(--text-accent);
+    border-color: var(--text-accent);
   }
   .brandhdr__rule {
     width: 100%;
     max-width: 560px;
     height: 2px;
-    background: var(--frame-secondary);
-    margin-top: var(--space-1);
+    background: var(--frame-default);
+    margin-top: var(--space-2);
   }
 
   @media (max-width: 640px) {
@@ -157,9 +143,6 @@ const isActive = (r: string) =>
       position: static;
       justify-content: center;
       margin-bottom: var(--space-2);
-    }
-    .brandhdr {
-      padding-top: var(--space-3);
     }
   }
 </style>

@@ -8,9 +8,19 @@
  */
 interface Props {
   color?: string;
+  variant?: "prism" | "crowned";
   class?: string;
 }
-const { color = "var(--frame-default)", class: className } = Astro.props;
+const {
+  color = "var(--frame-default)",
+  variant = "prism",
+  class: className,
+} = Astro.props;
+const crowned = variant === "crowned";
+
+// The cartola hat that breaks the top rule at centre (the brand signature).
+const HAT =
+  `<path d="M 490.888 387.526 C 599.444 443.45 673.684 556.634 673.684 687.158 C 673.684 873.191 522.874 1024 336.842 1024 C 150.809 1024 0 873.191 0 687.158 C 0 556.634 74.239 443.45 182.795 387.526 L 0 0 L 673.684 0 L 490.888 387.526 Z M 336.847 296.421 C 298.003 296.421 261.358 305.849 229.053 322.537 L 328.321 533.53 C 331.722 540.752 341.971 540.752 345.372 533.53 L 444.632 322.537 C 412.328 305.851 375.687 296.421 336.847 296.421 Z" fill-rule="nonzero"/>`;
 
 const CORNER =
   `<path d="M 28 5 L 10 5 C 7.239 5 5 7.239 5 10 L 5 28 L 0 28 L 0 0 L 28 0 L 28 5 Z" fill-rule="nonzero"/>` +
@@ -32,8 +42,10 @@ const corners = [
 
 <div class:list={["acdf", className]} style={`--fc:${color}`}>
   <svg class="acdf-corner" width="28" height="28" viewBox="0 0 28 28" fill="var(--fc)" aria-hidden="true" style={`transform:${corners[0].t}`} set:html={CORNER} />
-  <div class="acdf-edge-h">
-    <span class="acdf-h"></span><span class="acdf-h"></span>
+  <div class:list={["acdf-edge-h", crowned && "acdf-edge-h--crown"]}>
+    <span class="acdf-h"></span>
+    {crowned && <svg class="acdf-crown" width="40" height="60" viewBox="0 0 673.684 1024" fill="var(--fc)" aria-hidden="true" set:html={HAT} />}
+    <span class="acdf-h"></span>
   </div>
   <svg class="acdf-corner" width="28" height="28" viewBox="0 0 28 28" fill="var(--fc)" aria-hidden="true" style={`transform:${corners[1].t}`} set:html={CORNER} />
 
@@ -110,6 +122,10 @@ const corners = [
   .acdf-edge-h.flip { transform: scaleY(-1); }
   .acdf-edge-v.flip { transform: scaleX(-1); }
   .acdf-mid { display: block; flex: none; }
+  /* Crowned: the cartola breaks the top rule — brim flush with the outer line,
+     round body hanging DOWN into the content. */
+  .acdf-edge-h--crown { align-items: flex-start; gap: 24px; }
+  .acdf-crown { position: relative; z-index: 3; flex: none; display: block; }
   .acdf-content {
     position: relative;
     min-width: 0;
