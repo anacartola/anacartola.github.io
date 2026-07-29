@@ -12,34 +12,66 @@ const t = useTranslations(locale);
 
 <button
   type="button"
-  class="theme-toggle"
+  class="acb-icon-toggle"
   data-theme-toggle
   aria-label={t.theme.toggle}
   title={t.theme.toggle}
 >
-  <Icon name="IconsProductMediaSunStyleOutline" size={16} />
+  <span>
+    <Icon name="IconsProductMediaSunStyleOutline" size={18} />
+  </span>
 </button>
 
 <style>
-  .theme-toggle {
+  /* DS IconButton anatomy: ghost type — outer square frame + inner rounded fill.
+     Rest = transparent; hover = copper frame + copper inner. */
+  .acb-icon-toggle {
+    position: relative;
+    box-sizing: border-box;
     display: inline-flex;
+    padding: var(--inset-gap);
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    cursor: pointer;
+    width: var(--control-h-sm, 36px);
+    height: var(--control-h-sm, 36px);
+    transition: background var(--dur-fast) var(--ease-std);
+  }
+  .acb-icon-toggle > span {
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: var(--control-h-tab, 32px);
-    height: var(--control-h-tab, 32px);
-    padding: 0;
-    color: var(--text-muted);
+    flex: 1;
+    border-radius: var(--inner-radius);
     background: transparent;
-    border: var(--stroke-default, 1px) solid var(--border-soft);
-    cursor: pointer;
+    color: var(--text-muted);
     transition:
-      color var(--dur-fast) var(--ease-std),
-      border-color var(--dur-fast) var(--ease-std);
+      background var(--dur-fast) var(--ease-std),
+      color var(--dur-fast) var(--ease-std);
   }
-  .theme-toggle:hover,
-  .theme-toggle:focus-visible {
-    color: var(--frame-accent);
-    border-color: var(--frame-accent);
+  .acb-icon-toggle:hover {
+    background: var(--orange-500);
+  }
+  .acb-icon-toggle:hover > span {
+    background: var(--orange-100);
+    color: var(--blue-900);
+  }
+  .acb-icon-toggle:focus-visible {
+    outline: none;
+    background: var(--orange-500);
+  }
+  .acb-icon-toggle:focus-visible > span {
+    background: var(--orange-100);
+    color: var(--blue-900);
+    box-shadow: 0 0 0 2px var(--orange-500) inset;
+  }
+  :global([data-theme="dark"]) .acb-icon-toggle > span {
+    color: var(--blue-50);
+  }
+  :global([data-theme="dark"]) .acb-icon-toggle:hover > span {
+    background: var(--orange-50);
+    color: var(--blue-900);
   }
 </style>
 

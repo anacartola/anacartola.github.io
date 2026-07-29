@@ -1,7 +1,6 @@
 ---
 import { LOCALES, LOCALE_NAMES, type Locale } from "../i18n";
 import { useTranslations, localizedPath } from "../i18n/utils";
-import Icon from "./icons/Icon.astro";
 
 interface Props {
   locale: Locale;
@@ -12,109 +11,168 @@ const { locale, route, availableLocales } = Astro.props;
 const t = useTranslations(locale);
 ---
 
-<details class="lang-switch">
-  <summary aria-label={t.language.switch}>
-    <span class="lang-switch__label">{LOCALE_NAMES[locale]}</span>
-    <span class="lang-switch__arrow" aria-hidden="true">
-      <Icon name="IconsProductNavigationArrowDownStyleOutline" size={10} />
+<details class="acs-wrap">
+  <summary class="acs-trigger" aria-label={t.language.switch}>
+    <span class="acs-face">
+      <span>{LOCALE_NAMES[locale]}</span>
+      <span class="acs-caret" aria-hidden="true"></span>
     </span>
   </summary>
-  <ul class="lang-switch__menu" role="list">
-    {
-      LOCALES.map((loc) => {
-        const available = !availableLocales || availableLocales.includes(loc);
-        return (
-          <li>
-            <a
-              href={localizedPath(route, loc)}
-              hreflang={loc}
-              class:list={["lang-switch__item", loc === locale && "is-current"]}
-              aria-current={loc === locale ? "true" : undefined}
-            >
-              <span>{LOCALE_NAMES[loc]}</span>
-              {!available && (
-                <span class="lang-switch__na">
-                  {t.language.notAvailable} {loc.toUpperCase()}
-                </span>
-              )}
-            </a>
-          </li>
-        );
-      })
-    }
-  </ul>
+  <div class="acs-menu">
+    <ul class="acs-list" role="list">
+      {
+        LOCALES.map((loc) => {
+          const available = !availableLocales || availableLocales.includes(loc);
+          return (
+            <li>
+              <a
+                href={localizedPath(route, loc)}
+                hreflang={loc}
+                class:list={["acs-opt", loc === locale && "is-sel"]}
+                aria-current={loc === locale ? "true" : undefined}
+              >
+                <span>{LOCALE_NAMES[loc]}</span>
+                {!available && (
+                  <span class="acs-na">
+                    {t.language.notAvailable} {loc.toUpperCase()}
+                  </span>
+                )}
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
 </details>
 
 <style>
-  .lang-switch {
+  /* DS Select anatomy: outer square frame + inner rounded face.
+     Always "filled" state since a language is always selected. */
+  .acs-wrap {
     position: relative;
-    font: var(--type-label);
-    letter-spacing: var(--tracking-label);
+    font: var(--type-body-sm);
   }
-  .lang-switch summary {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
-    border: var(--stroke-default, 1px) solid var(--border-soft);
-    color: var(--text-muted);
+  .acs-trigger {
+    display: flex;
+    box-sizing: border-box;
+    padding: var(--inset-gap);
+    height: var(--control-h-sm, 36px);
+    background: var(--blue-500);
+    border: 0;
+    border-radius: 0;
     cursor: pointer;
     list-style: none;
     user-select: none;
-    transition:
-      color var(--dur-fast) var(--ease-std),
-      border-color var(--dur-fast) var(--ease-std);
+    transition: background var(--dur-fast) var(--ease-std);
   }
-  .lang-switch summary::-webkit-details-marker {
+  .acs-trigger::-webkit-details-marker {
     display: none;
   }
-  .lang-switch summary:hover,
-  .lang-switch[open] summary {
-    color: var(--frame-accent);
-    border-color: var(--frame-accent);
-  }
-  .lang-switch__arrow {
-    display: inline-flex;
+  .acs-face {
+    flex: 1;
+    display: flex;
     align-items: center;
-    transition: transform var(--dur-fast) var(--ease-std);
+    justify-content: space-between;
+    gap: 8px;
+    background: var(--blue-50);
+    border-radius: var(--inner-radius);
+    padding: 0 12px;
+    color: var(--blue-900);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
   }
-  .lang-switch[open] .lang-switch__arrow {
+  .acs-caret {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid var(--blue-500);
+    flex: none;
+    transition: transform var(--dur-move, 0.2s) var(--ease-std);
+  }
+  .acs-wrap[open] .acs-caret {
     transform: rotate(180deg);
   }
-  .lang-switch__menu {
-    position: absolute;
-    right: 0;
-    top: calc(100% + 4px);
-    z-index: 50;
-    margin: 0;
-    padding: var(--inset-gap, 4px);
-    list-style: none;
-    min-width: 10rem;
-    background: var(--surface-card);
-    border: var(--stroke-default, 1px) solid var(--border-soft);
+  .acs-wrap[open] .acs-trigger,
+  .acs-trigger:hover {
+    background: var(--orange-500);
   }
-  .lang-switch__item {
+  .acs-trigger:hover .acs-face {
+    background: var(--orange-100);
+  }
+  .acs-trigger:hover .acs-caret {
+    border-top-color: var(--orange-500);
+  }
+  .acs-wrap[open] .acs-face {
+    background: var(--orange-100);
+  }
+  .acs-wrap[open] .acs-caret {
+    border-top-color: var(--orange-500);
+  }
+  .acs-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    left: 0;
+    z-index: 40;
+    background: var(--blue-500);
+    padding: var(--inset-gap);
+    box-shadow: var(--shadow-menu);
+  }
+  .acs-list {
+    background: var(--blue-50);
+    border-radius: var(--inner-radius);
+    overflow: hidden;
+    padding: 4px;
+    margin: 0;
+    list-style: none;
+  }
+  .acs-opt {
     display: flex;
     flex-direction: column;
     padding: 8px 10px;
+    border-radius: var(--radius-sm, 3px);
+    cursor: pointer;
+    color: var(--blue-900);
     text-decoration: none;
     font: var(--type-body-sm);
-    color: var(--text-body);
     transition:
       background var(--dur-fast) var(--ease-std),
       color var(--dur-fast) var(--ease-std);
   }
-  .lang-switch__item:hover,
-  .lang-switch__item:focus-visible {
-    background: var(--interactive-inner-hover);
-    color: var(--frame-accent);
+  .acs-opt:hover {
+    background: var(--orange-500);
+    color: var(--orange-100);
   }
-  .lang-switch__item.is-current {
-    color: var(--text-heading);
-    font-weight: 600;
+  .acs-opt.is-sel {
+    background: var(--blue-500);
+    color: var(--blue-100);
   }
-  .lang-switch__na {
+  .acs-na {
     font: var(--type-caption);
-    color: var(--text-muted);
+    opacity: 0.7;
+  }
+
+  /* Dark mode: outer frame lightens, inner stays light */
+  :global([data-theme="dark"]) .acs-trigger {
+    background: var(--blue-300);
+  }
+  :global([data-theme="dark"]) .acs-face {
+    background: var(--grey-50);
+  }
+  :global([data-theme="dark"]) .acs-menu {
+    background: var(--blue-300);
+  }
+  :global([data-theme="dark"]) .acs-list {
+    background: var(--grey-50);
+  }
+  :global([data-theme="dark"]) .acs-trigger:hover,
+  :global([data-theme="dark"]) .acs-wrap[open] .acs-trigger {
+    background: var(--orange-500);
+  }
+  :global([data-theme="dark"]) .acs-trigger:hover .acs-face,
+  :global([data-theme="dark"]) .acs-wrap[open] .acs-face {
+    background: var(--orange-50);
   }
 </style>
