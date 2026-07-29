@@ -1,0 +1,29 @@
+# A. Cartola
+
+> Ana Carolina Cartola (A. Cartola) is an Analytics Strategist with Engineering
+> Depth. This site is her portfolio in data, analytics and engineering: business
+> problems turned into measurement frameworks, data architecture, and clear
+> narrative. Content is written in Portuguese (native) and English, with partial
+> French and Chinese versions.
+
+## Pages
+- [Home](https://anacartola.com/): positioning and highlights.
+- [Projects](https://anacartola.com/projects): data, analytics and engineering case studies.
+- [Blog](https://anacartola.com/blog): technical writing on measurement, SQL and analytics engineering.
+- [Resources](https://anacartola.com/resources): free tools, templates and calculators.
+- [About](https://anacartola.com/about): bio, positioning and segments served.
+- [Contact](https://anacartola.com/contact): LinkedIn, GitHub and email.
+
+## Projects
+- [Behavioural churn measurement](https://anacartola.com/projects/spades-churn-measurement): from a retention problem to a measurement framework, pipeline and narrative.
+- [Recurring revenue model](https://anacartola.com/projects/diamonds-revenue-model): a cohort-based, auditable revenue model over raw billing.
+- [Near-real-time event pipeline](https://anacartola.com/projects/clubs-data-pipeline): event ingestion with Kafka and orchestration in Airflow.
+
+## Writing
+- [A measurement framework before touching the pipeline](https://anacartola.com/blog/measurement-framework-churn): why the definition comes before the engineering.
+- [Window functions every analyst should master](https://anacartola.com/blog/sql-window-functions): a practical tour of SQL window functions.
+
+## Resources
+- [Sample size calculator](https://anacartola.com/resources/sample-size-calculator): how many users per variant to detect an effect with confidence.
+- [PRD template for data projects](https://anacartola.com/resources/prd-template-dados): a PRD skeleton for analytics and automation work.
+- [Event instrumentation checklist](https://anacartola.com/resources/event-instrumentation-checklist): naming, properties, governance and validation before shipping an event.
