@@ -138,6 +138,8 @@ export const zh: Dictionary = {
     empty: "暂无已发布的资源。",
   },
   footer: {
+    navigate: "导航",
+    contact: "联系",
     rights: "版权所有。",
     builtWith: "使用 Astro 构建。",
   },

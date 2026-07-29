@@ -1,6 +1,6 @@
 ---
 import { type Locale } from "../i18n";
-import { useTranslations } from "../i18n/utils";
+import { useTranslations, localizedPath } from "../i18n/utils";
 import Icon from "./icons/Icon.astro";
 
 interface Props {
@@ -10,7 +10,19 @@ const { locale } = Astro.props;
 const t = useTranslations(locale);
 const year = new Date().getFullYear();
 
-// Only the three mascots, centred (per the brand footer).
+const navLinks = [
+  { href: "/projects", label: t.nav.projects },
+  { href: "/blog", label: t.nav.blog },
+  { href: "/resources", label: t.nav.resources },
+  { href: "/about", label: t.nav.about },
+];
+
+const contactLinks = [
+  { href: "mailto:anacarolina.cartola@gmail.com", label: "Email" },
+  { href: "https://linkedin.com/in/anacartola", label: "LinkedIn" },
+  { href: "https://github.com/anacartola", label: "GitHub" },
+];
+
 const mascots = [
   { name: "IconsCartolaPersonagensBirdStyleOutline" as const, label: "Corvo" },
   { name: "IconsCartolaPersonagensDogStyleOutline" as const, label: "Beagle" },
@@ -19,16 +31,40 @@ const mascots = [
 ---
 
 <footer class="ftr">
-  <div class="ftr__mascots">
-    {
-      mascots.map((m) => (
-        <span class="ftr__mascot">
-          <Icon name={m.name} size={34} />
-          <small>{m.label}</small>
-        </span>
-      ))
-    }
+  <div class="ftr__cols">
+    <div class="ftr__brand">
+      <a class="ftr__name" href={localizedPath("/", locale)}>{t.site.author}</a>
+      <p class="ftr__tagline">{t.site.tagline}</p>
+    </div>
+
+    <div class="ftr__col">
+      <h4 class="ftr__heading">{t.footer.navigate}</h4>
+      <ul role="list">
+        {navLinks.map((link) => (
+          <li><a href={localizedPath(link.href, locale)}>{link.label}</a></li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="ftr__col">
+      <h4 class="ftr__heading">{t.footer.contact}</h4>
+      <ul role="list">
+        {contactLinks.map((link) => (
+          <li><a href={link.href}>{link.label}</a></li>
+        ))}
+      </ul>
+    </div>
   </div>
+
+  <div class="ftr__mascots">
+    {mascots.map((m) => (
+      <span class="ftr__mascot">
+        <Icon name={m.name} size={34} />
+        <small>{m.label}</small>
+      </span>
+    ))}
+  </div>
+
   <p class="ftr__meta">© {year} {t.site.fullName} · {t.footer.builtWith}</p>
 </footer>
 
@@ -40,13 +76,70 @@ const mascots = [
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-5);
-    text-align: center;
+    gap: var(--space-6);
+  }
+  .ftr__cols {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: var(--space-8);
+  }
+  .ftr__brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .ftr__name {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--text-heading);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .ftr__name:hover {
+    color: var(--frame-accent);
+  }
+  .ftr__tagline {
+    margin: 0;
+    font: var(--type-caption);
+    color: var(--text-muted);
+    max-width: none;
+  }
+  .ftr__col h4 {
+    margin: 0 0 var(--space-3);
+  }
+  .ftr__heading {
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--text-heading);
+  }
+  .ftr__col ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .ftr__col a {
+    font: var(--type-body-sm);
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--dur-fast) var(--ease-std);
+  }
+  .ftr__col a:hover {
+    color: var(--frame-accent);
   }
   .ftr__mascots {
     display: flex;
     justify-content: center;
     gap: var(--space-8);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-soft);
+    width: 100%;
   }
   .ftr__mascot {
     display: flex;
@@ -64,5 +157,16 @@ const mascots = [
     font: var(--type-caption);
     color: var(--text-muted);
     max-width: none;
+  }
+
+  @media (max-width: 640px) {
+    .ftr__cols {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+      text-align: center;
+    }
+    .ftr__brand {
+      align-items: center;
+    }
   }
 </style>

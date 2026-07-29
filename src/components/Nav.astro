@@ -33,7 +33,7 @@ const isActive = (r: string) =>
   <a class="brandhdr__name" href={localizedPath("/", locale)}>{t.site.author}</a>
 
   <nav class="brandhdr__nav" aria-label={t.nav.menu}>
-    <span class="caret" aria-hidden="true">&#9658;</span>
+    <span class="caret caret--right" aria-hidden="true"></span>
     <ul role="list">
       {
         items.map((item) => (
@@ -49,7 +49,7 @@ const isActive = (r: string) =>
         ))
       }
     </ul>
-    <span class="caret" aria-hidden="true">&#9668;</span>
+    <span class="caret caret--left" aria-hidden="true"></span>
   </nav>
 
   <div class="brandhdr__rule" aria-hidden="true"></div>
@@ -104,10 +104,19 @@ const isActive = (r: string) =>
     justify-content: center;
   }
   .caret {
-    color: var(--frame-accent);
-    display: inline-flex;
-    padding: 0 10px;
-    font-size: 13px;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    flex-shrink: 0;
+    margin: 0 10px;
+  }
+  .caret--right {
+    border-left: 7px solid var(--frame-accent);
+  }
+  .caret--left {
+    border-right: 7px solid var(--frame-accent);
   }
   .brandhdr__link {
     /* inactive links use the lower-contrast secondary colour */

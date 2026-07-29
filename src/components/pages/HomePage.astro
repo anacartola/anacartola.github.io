@@ -23,8 +23,9 @@ const STATUS_CLS: Record<string, string> = {
 };
 
 const allProjects = await getProjectsForLocale(locale);
-const featured = allProjects.filter((p) => p.entry.data.featured);
-const featuredList = (featured.length ? featured : allProjects).slice(0, 3);
+const pinned = allProjects.filter((p) => p.entry.data.featured);
+const unpinned = allProjects.filter((p) => !p.entry.data.featured);
+const featuredList = [...pinned, ...unpinned].slice(0, 3);
 const posts = (await getPostsForLocale(locale)).slice(0, 3);
 
 const rows = allProjects.map((p) => ({

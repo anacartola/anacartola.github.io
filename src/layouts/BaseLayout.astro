@@ -75,7 +75,7 @@ const t = useTranslations(locale);
   </head>
   <body>
     <a class="skip-link" href="#main">{t.nav.skipToContent}</a>
-    <div class="ac-page">
+    <div class="ac-page ac-page--loading">
       <DecoFrame variant="crowned">
         <div class="ac-frame-pad">
           <Nav locale={locale} route={route} />
@@ -91,20 +91,32 @@ const t = useTranslations(locale);
     <style>
       .ac-page {
         width: 100%;
-        max-width: var(--container-max);
-        margin-inline: auto;
-        padding: var(--space-6) var(--space-5) var(--space-10);
         box-sizing: border-box;
+        padding: var(--space-5);
+        opacity: 1;
+        transform: translateY(0);
+        animation: pageReveal 0.6s var(--ease-std) both;
+      }
+      .ac-page--loading {
+        opacity: 0;
+      }
+      @keyframes pageReveal {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
       }
       .ac-frame-pad {
         padding: clamp(16px, 4vw, 34px);
       }
-      /* Inside the frame the page already owns its width; neutralise the extra
-         container inset so sections use the frame's inner width. */
       .ac-frame-pad :global(.container) {
         max-width: none;
         padding-inline: 0;
       }
     </style>
+    <script is:inline>
+      requestAnimationFrame(function () {
+        var el = document.querySelector('.ac-page--loading');
+        if (el) el.classList.remove('ac-page--loading');
+      });
+    </script>
   </body>
 </html>

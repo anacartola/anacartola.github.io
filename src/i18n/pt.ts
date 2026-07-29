@@ -139,6 +139,8 @@ export const pt = {
     empty: "Nenhum recurso publicado ainda.",
   },
   footer: {
+    navigate: "Navegar",
+    contact: "Contato",
     rights: "Todos os direitos reservados.",
     builtWith: "Construído com Astro.",
   },

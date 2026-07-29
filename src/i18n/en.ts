@@ -138,6 +138,8 @@ export const en: Dictionary = {
     empty: "No resources published yet.",
   },
   footer: {
+    navigate: "Navigate",
+    contact: "Contact",
     rights: "All rights reserved.",
     builtWith: "Built with Astro.",
   },
