@@ -9,8 +9,9 @@ import Badge from "./Badge.astro";
 interface Props {
   item: Localized<PostEntry>;
   locale: Locale;
+  cardVariant?: "default" | "elevated" | "dark" | "highlight" | "light" | "light-highlight";
 }
-const { item, locale } = Astro.props;
+const { item, locale, cardVariant = "default" } = Astro.props;
 const { entry, slug, isFallback, lang } = item;
 const t = useTranslations(locale);
 const data = entry.data;
@@ -24,7 +25,7 @@ const dateLabel = new Intl.DateTimeFormat(HTML_LANG[locale], {
 const minutes = readingTimeMinutes(entry);
 ---
 
-<Card variant="default" href={href} class="post-card">
+<Card variant={cardVariant} href={href} class="post-card">
   <div class="post-card__head">
     {data.suit && <Badge suit={data.suit} icon label={t.suits[data.suit]} />}
     {

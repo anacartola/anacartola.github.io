@@ -110,10 +110,11 @@ const isActive = (r: string) =>
     font-size: 13px;
   }
   .brandhdr__link {
+    /* inactive links use the lower-contrast secondary colour */
     font: var(--type-label);
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--text-body);
+    color: var(--text-muted);
     text-decoration: none;
     padding: 6px 10px;
     border-bottom: 2px solid transparent;
@@ -126,9 +127,10 @@ const isActive = (r: string) =>
     color: var(--frame-accent);
     border-color: var(--frame-accent);
   }
+  /* the active (current) item is the high-contrast one */
   .brandhdr__link.is-active {
-    color: var(--text-accent);
-    border-color: var(--text-accent);
+    color: var(--text-body);
+    border-color: var(--text-body);
   }
   .brandhdr__rule {
     width: 100%;

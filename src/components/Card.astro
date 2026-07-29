@@ -5,7 +5,7 @@
  * API preserved: `variant` (default|elevated|dark|highlight), `href`, `class`, slot.
  */
 interface Props {
-  variant?: "default" | "elevated" | "dark" | "highlight";
+  variant?: "default" | "elevated" | "dark" | "highlight" | "light" | "light-highlight";
   href?: string;
   class?: string;
 }
@@ -71,6 +71,31 @@ const corners = [
   .accard--highlight {
     --cc: var(--orange-500);
   }
+  /* Always-light card: pins a light surface + dark ink in BOTH themes, so it
+     pops on the dark page and its text stays readable. Overriding the semantic
+     text tokens locally cascades dark ink to the slotted content. */
+  .accard--light,
+  .accard--light-highlight {
+    background: var(--blue-50);
+    color: var(--blue-900);
+    --text: var(--blue-900);
+    --text-body: var(--blue-900);
+    --text-detail: var(--blue-500);
+    --text-heading: var(--blue-500);
+    --text-muted: var(--brown-700);
+    --border: var(--blue-200);
+    --border-soft: var(--blue-200);
+    --cc: var(--blue-500);
+    box-shadow: var(--shadow-raised);
+  }
+  .accard--light-highlight {
+    --cc: var(--orange-500);
+  }
+  /* light cards keep dark-ink corners even under the dark theme */
+  :global([data-theme="dark"]) .accard--light,
+  :global([data-theme="dark"]) .accard--light-highlight {
+    color: var(--blue-900);
+  }
 
   .accard-corner {
     position: absolute;
@@ -91,9 +116,11 @@ const corners = [
   .accard--default.accard--link:hover,
   .accard--elevated.accard--link:hover,
   .accard--dark.accard--link:hover,
+  .accard--light.accard--link:hover,
   .accard--default.accard--link:focus-visible,
   .accard--elevated.accard--link:focus-visible,
-  .accard--dark.accard--link:focus-visible {
+  .accard--dark.accard--link:focus-visible,
+  .accard--light.accard--link:focus-visible {
     --cc: var(--orange-500);
   }
   .accard--link:focus-visible {

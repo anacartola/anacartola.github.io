@@ -2,11 +2,12 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { LOCALES, type Locale } from "../../i18n";
 import { useTranslations, localizedPath } from "../../i18n/utils";
-import { getProjectsForLocale } from "../../lib/content";
+import { getProjectsForLocale, getPostsForLocale } from "../../lib/content";
 import Button from "../Button.astro";
-import Card from "../Card.astro";
+import ProjectCard from "../ProjectCard.astro";
+import PostCard from "../PostCard.astro";
+import ClientWall from "../ClientWall.astro";
 import OrnamentalBand from "../OrnamentalBand.astro";
-import SuitIcon from "../symbols/SuitIcon.astro";
 
 interface Props {
   locale: Locale;
@@ -15,19 +16,18 @@ const { locale } = Astro.props;
 const t = useTranslations(locale);
 
 const SUIT_CHAR: Record<string, string> = {
-  spades: "♠",
-  diamonds: "♦",
-  hearts: "♥",
-  clubs: "♣",
+  spades: "♠", diamonds: "♦", hearts: "♥", clubs: "♣",
 };
 const STATUS_CLS: Record<string, string> = {
-  active: "st--success",
-  review: "st--warning",
-  draft: "st--neutral",
+  active: "st--success", review: "st--warning", draft: "st--neutral",
 };
 
-const projects = await getProjectsForLocale(locale);
-const rows = projects.map((p) => ({
+const allProjects = await getProjectsForLocale(locale);
+const featured = allProjects.filter((p) => p.entry.data.featured);
+const featuredList = (featured.length ? featured : allProjects).slice(0, 3);
+const posts = (await getPostsForLocale(locale)).slice(0, 3);
+
+const rows = allProjects.map((p) => ({
   title: p.entry.data.title,
   suit: p.entry.data.suit,
   status: p.entry.data.status,
@@ -58,57 +58,49 @@ const tabs = [
     <h1 class="hero__title">{t.home.heroTitle}<span class="hero__caret" aria-hidden="true"></span></h1>
     <p class="hero__sub">{t.home.heroSub}</p>
     <div class="hero__cta">
-      <Button href={localizedPath("/contact", locale)} variant="primary">{t.home.ctaStart}</Button>
+      <Button href={localizedPath("/projects", locale)} variant="primary">{t.home.ctaStart}</Button>
       <Button href={localizedPath("/about", locale)} variant="ghost">{t.home.ctaMethod}</Button>
     </div>
   </section>
 
   <OrnamentalBand count={7} />
 
-  <!-- SERVICES -->
-  <section class="section">
-    <div class="sec-head"><h2>{t.home.servicesTitle}</h2></div>
-    <div class="services">
-      {
-        t.home.services.map((s, i) => (
-          <Card variant={i === 1 ? "highlight" : "default"}>
-            <div class="svc__icon"><SuitIcon suit={s.suit as any} size={28} /></div>
-            <p class="svc__eyebrow">{s.eyebrow}</p>
-            <h3 class="svc__title">{s.title}</h3>
-            <p class="svc__body">{s.body}</p>
-            <div class="svc__foot">
-              <Button href={localizedPath("/projects", locale)} variant="ghost" size="sm">
-                {t.home.explore}
-              </Button>
-            </div>
-          </Card>
-        ))
-      }
-    </div>
-  </section>
+  <!-- FEATURED PROJECTS -->
+  {
+    featuredList.length > 0 && (
+      <section class="section">
+        <div class="sec-head">
+          <h2>{t.home.featuredTitle}</h2>
+          <a href={localizedPath("/projects", locale)}>{t.home.allProjects} &#9658;</a>
+        </div>
+        <div class="grid3">
+          {featuredList.map((item, i) => (
+            <ProjectCard item={item} locale={locale} cardVariant={i === 1 ? "light-highlight" : "light"} />
+          ))}
+        </div>
+      </section>
+    )
+  }
 
-  <!-- PROJECTS TABLE -->
-  <section class="section">
-    <div class="sec-head">
-      <h2>{t.home.projectsTitle}</h2>
-      <div class="tabs" role="tablist">
-        {
-          tabs.map((tab, i) => (
-            <button
-              type="button"
-              class:list={["tab", i === 0 && "is-active"]}
-              data-tab={tab.key}
-              aria-selected={i === 0 ? "true" : "false"}
-            >
-              {tab.label}
-            </button>
-          ))
-        }
-      </div>
-    </div>
-
-    {
-      rows.length > 0 ? (
+  <!-- PROJECT BOARD -->
+  {
+    rows.length > 0 && (
+      <section class="section">
+        <div class="sec-head">
+          <h2>{t.home.boardTitle}</h2>
+          <div class="tabs" role="tablist">
+            {tabs.map((tab, i) => (
+              <button
+                type="button"
+                class:list={["tab", i === 0 && "is-active"]}
+                data-tab={tab.key}
+                aria-selected={i === 0 ? "true" : "false"}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
         <div class="table-wrap" data-project-table>
           <table class="actable">
             <thead>
@@ -129,23 +121,45 @@ const tabs = [
             </tbody>
           </table>
         </div>
-      ) : (
-        <p class="empty">{t.projects.empty}</p>
-      )
-    }
+      </section>
+    )
+  }
 
-    <div class="sec-foot">
-      <a href={localizedPath("/projects", locale)}>{t.home.allProjects} &rarr;</a>
+  <!-- RESOURCES & TOOLS (copper accent) -->
+  <section class="section">
+    <div class="accent">
+      <div class="accent__row">
+        <div>
+          <h2 class="accent__title">{t.home.resourcesTitle}</h2>
+          <p class="accent__lede">{t.home.resourcesLede}</p>
+        </div>
+        <Button href={localizedPath("/resources", locale)} variant="dark-primary">
+          {t.home.resourcesCta}
+        </Button>
+      </div>
     </div>
   </section>
 
-  <!-- DARK CTA -->
-  <section class="darkcta">
-    <h2 class="darkcta__title">{t.home.darkTitle}</h2>
-    <p class="darkcta__sub">{t.home.darkSub}</p>
-    <div class="darkcta__actions">
-      <Button href={localizedPath("/contact", locale)} variant="dark-primary">{t.home.darkCta}</Button>
-    </div>
+  <!-- LATEST POSTS -->
+  {
+    posts.length > 0 && (
+      <section class="section">
+        <div class="sec-head">
+          <h2>{t.home.latestPosts}</h2>
+          <a href={localizedPath("/blog", locale)}>{t.home.allPosts} &#9658;</a>
+        </div>
+        <div class="grid3">
+          {posts.map((item) => (
+            <PostCard item={item} locale={locale} cardVariant="light" />
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <!-- CLIENTS -->
+  <section class="section">
+    <ClientWall locale={locale} />
   </section>
 </BaseLayout>
 
@@ -170,9 +184,7 @@ const tabs = [
     animation: introblink 1s step-end infinite;
   }
   @keyframes introblink { 50% { opacity: 0; } }
-  .hero__sub {
-    font: var(--type-body-md); color: var(--text-muted); max-width: 60ch; margin: 0 auto var(--space-5);
-  }
+  .hero__sub { font: var(--type-body-md); color: var(--text-muted); max-width: 60ch; margin: 0 auto var(--space-5); }
   .hero__cta { display: flex; justify-content: center; gap: var(--space-3); flex-wrap: wrap; }
 
   .section { padding-block: var(--space-8); }
@@ -181,20 +193,9 @@ const tabs = [
     margin-bottom: var(--space-6); flex-wrap: wrap;
   }
   .sec-head h2 { margin: 0; font: var(--type-h2); color: var(--text-heading); }
-  .sec-foot { margin-top: var(--space-5); }
-  .sec-foot a, .tabs { font: var(--type-label); letter-spacing: var(--tracking-label); text-transform: uppercase; }
-  .sec-foot a { text-decoration: none; }
+  .sec-head a { font: var(--type-label); letter-spacing: var(--tracking-label); text-transform: uppercase; text-decoration: none; }
 
-  .services { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
-  @media (max-width: 760px) { .services { grid-template-columns: 1fr; } }
-  .svc__icon { color: var(--frame-default); margin-bottom: var(--space-2); }
-  .svc__eyebrow {
-    font: var(--type-label); text-transform: uppercase; letter-spacing: var(--tracking-label);
-    color: var(--text-heading); margin: 0 0 var(--space-1);
-  }
-  .svc__title { margin: 0 0 var(--space-2); }
-  .svc__body { margin: 0; font: var(--type-body-sm); color: inherit; opacity: 0.92; }
-  .svc__foot { margin-top: var(--space-4); }
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: var(--space-5); }
 
   /* Tabs */
   .tabs { display: flex; gap: 4px; }
@@ -244,16 +245,19 @@ const tabs = [
   .st--warning { color: var(--status-warning); }
   .st--neutral { color: var(--text-muted); }
   tr[hidden] { display: none; }
-  .empty { color: var(--text-muted); }
 
-  /* Dark CTA */
-  .darkcta {
-    background: var(--surface-dark); color: var(--blue-50); text-align: center;
-    padding: var(--space-10) var(--space-6); margin-top: var(--space-8);
+  /* Resources accent (copper) */
+  .accent {
+    background: var(--orange-500); color: var(--grey-50);
+    padding: var(--space-10) var(--space-8);
   }
-  .darkcta__title { color: var(--blue-50); margin: 0 0 var(--space-1); font: var(--type-h2); }
-  .darkcta__sub { color: var(--blue-100); margin: 0 0 var(--space-5); font: var(--type-body-sm); }
-  .darkcta__actions { display: flex; justify-content: center; gap: var(--space-3); flex-wrap: wrap; }
+  .accent__row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--space-6); flex-wrap: wrap;
+  }
+  .accent__title { color: var(--grey-50); margin: 0; font: var(--type-h2); }
+  .accent__lede { color: var(--orange-100); margin: 6px 0 0; max-width: 52ch; font: var(--type-body-sm); }
+  @media (max-width: 640px) { .accent__row { flex-direction: column; align-items: flex-start; } }
 </style>
 
 <script>

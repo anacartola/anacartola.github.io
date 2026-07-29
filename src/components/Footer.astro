@@ -1,7 +1,6 @@
 ---
 import { type Locale } from "../i18n";
-import { useTranslations, localizedPath } from "../i18n/utils";
-import { socialLinks } from "../data/site";
+import { useTranslations } from "../i18n/utils";
 import Icon from "./icons/Icon.astro";
 
 interface Props {
@@ -11,81 +10,43 @@ const { locale } = Astro.props;
 const t = useTranslations(locale);
 const year = new Date().getFullYear();
 
+// Only the three mascots, centred (per the brand footer).
 const mascots = [
   { name: "IconsCartolaPersonagensBirdStyleOutline" as const, label: "Corvo" },
   { name: "IconsCartolaPersonagensDogStyleOutline" as const, label: "Beagle" },
   { name: "IconsCartolaPersonagensFireflyBugStyleOutline" as const, label: "Vaga-lume" },
 ];
-const nav = [
-  { href: "/projects", label: t.nav.projects },
-  { href: "/blog", label: t.nav.blog },
-  { href: "/resources", label: t.nav.resources },
-  { href: "/about", label: t.nav.about },
-  { href: "/contact", label: t.nav.contact },
-];
-const socialLabel: Record<string, string> = {
-  email: t.contact.email,
-  linkedin: t.contact.linkedin,
-  github: t.contact.github,
-};
 ---
 
 <footer class="ftr">
-  <div class="container ftr__row">
-    <div class="ftr__mascots">
-      {
-        mascots.map((m) => (
-          <span class="ftr__mascot">
-            <Icon name={m.name} size={30} />
-            <small>{m.label}</small>
-          </span>
-        ))
-      }
-    </div>
-
-    <nav class="ftr__links" aria-label={t.nav.menu}>
-      <ul role="list">
-        {
-          nav.map((item) => (
-            <li>
-              <a href={localizedPath(item.href, locale)}>{item.label}</a>
-            </li>
-          ))
-        }
-        {
-          socialLinks.map((link) => (
-            <li>
-              <a href={link.href} rel="me noopener">
-                {socialLabel[link.key]}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
+  <div class="ftr__mascots">
+    {
+      mascots.map((m) => (
+        <span class="ftr__mascot">
+          <Icon name={m.name} size={34} />
+          <small>{m.label}</small>
+        </span>
+      ))
+    }
   </div>
-
-  <div class="container ftr__meta">
-    <p>© {year} {t.site.fullName} · {t.footer.rights} · {t.footer.builtWith}</p>
-  </div>
+  <p class="ftr__meta">© {year} {t.site.fullName} · {t.footer.builtWith}</p>
 </footer>
 
 <style>
   .ftr {
     margin-top: var(--space-12);
     padding-block: var(--space-8) var(--space-5);
-    border-top: var(--stroke-heavy) solid var(--frame-secondary);
-  }
-  .ftr__row {
+    border-top: 2px solid var(--frame-default);
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: var(--space-8);
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-5);
+    text-align: center;
   }
   .ftr__mascots {
     display: flex;
-    gap: var(--space-6);
+    justify-content: center;
+    gap: var(--space-8);
   }
   .ftr__mascot {
     display: flex;
@@ -98,26 +59,7 @@ const socialLabel: Record<string, string> = {
     font: var(--type-caption);
     color: var(--text-muted);
   }
-  .ftr__links ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2) var(--space-5);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .ftr__links a {
-    font: var(--type-body-sm);
-    color: var(--interactive-text);
-    text-decoration: none;
-  }
-  .ftr__links a:hover {
-    color: var(--frame-accent);
-  }
   .ftr__meta {
-    margin-top: var(--space-6);
-  }
-  .ftr__meta p {
     margin: 0;
     font: var(--type-caption);
     color: var(--text-muted);

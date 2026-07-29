@@ -8,15 +8,18 @@ import Badge from "./Badge.astro";
 interface Props {
   item: Localized<ProjectEntry>;
   locale: Locale;
+  /** Override the card surface (e.g. "light" for high-contrast home cards). */
+  cardVariant?: "default" | "elevated" | "dark" | "highlight" | "light" | "light-highlight";
 }
-const { item, locale } = Astro.props;
+const { item, locale, cardVariant } = Astro.props;
 const { entry, slug, isFallback, lang } = item;
 const t = useTranslations(locale);
 const data = entry.data;
 const href = localizedPath(`/projects/${slug}`, locale);
+const variant = cardVariant ?? (data.featured ? "highlight" : "default");
 ---
 
-<Card variant={data.featured ? "highlight" : "default"} href={href} class="project-card">
+<Card variant={variant} href={href} class="project-card">
   <div class="project-card__head">
     <Badge suit={data.suit} icon label={t.suits[data.suit]} />
     {
