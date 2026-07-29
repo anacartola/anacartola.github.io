@@ -3,6 +3,7 @@ import { type Locale } from "../i18n";
 import { useTranslations, localizedPath } from "../i18n/utils";
 import LanguageSwitcher from "./LanguageSwitcher.astro";
 import ThemeToggle from "./ThemeToggle.astro";
+import Icon from "./icons/Icon.astro";
 
 interface Props {
   locale: Locale;
@@ -33,7 +34,9 @@ const isActive = (r: string) =>
   <a class="brandhdr__name" href={localizedPath("/", locale)}>{t.site.author}</a>
 
   <nav class="brandhdr__nav" aria-label={t.nav.menu}>
-    <span class="caret caret--right" aria-hidden="true"></span>
+    <span class="caret" aria-hidden="true">
+      <Icon name="IconsProductMediaPlayStyleOutline" size={14} />
+    </span>
     <ul role="list">
       {
         items.map((item) => (
@@ -49,7 +52,9 @@ const isActive = (r: string) =>
         ))
       }
     </ul>
-    <span class="caret caret--left" aria-hidden="true"></span>
+    <span class="caret" aria-hidden="true">
+      <Icon name="IconsProductMediaSkipBackStyleOutline" size={14} />
+    </span>
   </nav>
 
   <div class="brandhdr__rule" aria-hidden="true"></div>
@@ -104,19 +109,11 @@ const isActive = (r: string) =>
     justify-content: center;
   }
   .caret {
-    display: inline-block;
-    width: 0;
-    height: 0;
-    border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    color: var(--frame-accent);
     flex-shrink: 0;
-    margin: 0 10px;
-  }
-  .caret--right {
-    border-left: 7px solid var(--frame-accent);
-  }
-  .caret--left {
-    border-right: 7px solid var(--frame-accent);
+    margin: 0 6px;
   }
   .brandhdr__link {
     /* inactive links use the lower-contrast secondary colour */
