@@ -26,12 +26,13 @@ const isActive = (r: string) =>
 ---
 
 <header class="brandhdr">
-  <div class="brandhdr__tools">
-    <LanguageSwitcher locale={locale} route={route} />
-    <ThemeToggle locale={locale} />
+  <div class="brandhdr__top">
+    <a class="brandhdr__name" href={localizedPath("/", locale)}>{t.site.author}</a>
+    <div class="brandhdr__tools">
+      <LanguageSwitcher locale={locale} route={route} />
+      <ThemeToggle locale={locale} />
+    </div>
   </div>
-
-  <a class="brandhdr__name" href={localizedPath("/", locale)}>{t.site.author}</a>
 
   <nav class="brandhdr__nav" aria-label={t.nav.menu}>
     <span class="caret" aria-hidden="true">
@@ -69,6 +70,9 @@ const isActive = (r: string) =>
     gap: var(--space-2);
     /* top padding clears the crowned cartola hanging from the frame top */
     padding: 44px 0 14px;
+  }
+  .brandhdr__top {
+    display: contents;
   }
   .brandhdr__tools {
     position: absolute;
@@ -147,10 +151,45 @@ const isActive = (r: string) =>
   }
 
   @media (max-width: 640px) {
+    .brandhdr {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--surface-page);
+      padding: var(--space-2) 0 0;
+      gap: var(--space-1);
+      align-items: stretch;
+    }
+    .brandhdr__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
     .brandhdr__tools {
       position: static;
-      justify-content: center;
-      margin-bottom: var(--space-2);
+      margin-bottom: 0;
+    }
+    .brandhdr__name {
+      font-size: clamp(18px, 5vw, 26px);
+      white-space: nowrap;
+    }
+    .brandhdr__nav {
+      flex-wrap: nowrap;
+      width: 100%;
+    }
+    .brandhdr__nav ul {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      min-width: 0;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .brandhdr__nav ul::-webkit-scrollbar {
+      display: none;
+    }
+    .brandhdr__rule {
+      max-width: none;
     }
   }
 </style>
