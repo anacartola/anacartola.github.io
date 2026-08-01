@@ -152,7 +152,9 @@ const isActive = (r: string) =>
       top: 0;
       z-index: 5;
       background: var(--surface-page);
-      padding: 50px var(--space-2) 0;
+      padding: 16px clamp(16px, 4vw, 34px) 0;
+      margin-left: calc(-1 * clamp(16px, 4vw, 34px));
+      margin-right: calc(-1 * clamp(16px, 4vw, 34px));
       gap: var(--space-2);
     }
     .brandhdr__name {
