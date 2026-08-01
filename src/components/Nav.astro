@@ -26,6 +26,11 @@ const isActive = (r: string) =>
 ---
 
 <header class="brandhdr">
+  <div class="brandhdr__crown-wrap" aria-hidden="true">
+    <svg width="30" height="45" viewBox="0 0 673.684 1024" fill="var(--frame-default)">
+      <path d="M 490.888 387.526 C 599.444 443.45 673.684 556.634 673.684 687.158 C 673.684 873.191 522.874 1024 336.842 1024 C 150.809 1024 0 873.191 0 687.158 C 0 556.634 74.239 443.45 182.795 387.526 L 0 0 L 673.684 0 L 490.888 387.526 Z M 336.847 296.421 C 298.003 296.421 261.358 305.849 229.053 322.537 L 328.321 533.53 C 331.722 540.752 341.971 540.752 345.372 533.53 L 444.632 322.537 C 412.328 305.851 375.687 296.421 336.847 296.421 Z" fill-rule="nonzero"/>
+    </svg>
+  </div>
   <a class="brandhdr__name" href={localizedPath("/", locale)}>{t.site.author}</a>
 
   <div class="brandhdr__tools">
@@ -34,9 +39,9 @@ const isActive = (r: string) =>
   </div>
 
   <nav class="brandhdr__nav" aria-label={t.nav.menu}>
-    <span class="caret" aria-hidden="true">
-      <Icon name="IconsProductMediaPlayStyleOutline" size={14} />
-    </span>
+    <button class="caret" type="button" data-dir="-1">
+      <Icon name="IconsProductMediaSkipBackStyleOutline" size={14} />
+    </button>
     <ul role="list">
       {
         items.map((item) => (
@@ -52,9 +57,9 @@ const isActive = (r: string) =>
         ))
       }
     </ul>
-    <span class="caret" aria-hidden="true">
-      <Icon name="IconsProductMediaSkipBackStyleOutline" size={14} />
-    </span>
+    <button class="caret" type="button" data-dir="1">
+      <Icon name="IconsProductMediaPlayStyleOutline" size={14} />
+    </button>
   </nav>
 
   <div class="brandhdr__rule" aria-hidden="true"></div>
@@ -83,7 +88,7 @@ const isActive = (r: string) =>
     font-weight: 800;
     font-size: 40px;
     letter-spacing: 0.02em;
-    color: var(--text-body);
+    color: var(--logo-ink);
     line-height: 1;
     text-decoration: none;
   }
@@ -114,6 +119,10 @@ const isActive = (r: string) =>
     color: var(--frame-accent);
     flex-shrink: 0;
     margin: 0 6px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
   }
   .brandhdr__link {
     /* inactive links use the lower-contrast secondary colour */
@@ -138,6 +147,7 @@ const isActive = (r: string) =>
     color: var(--text-body);
     border-color: var(--text-body);
   }
+  .brandhdr__crown-wrap { display: none; }
   .brandhdr__rule {
     width: 100%;
     max-width: 560px;
@@ -152,10 +162,21 @@ const isActive = (r: string) =>
       top: 0;
       z-index: 5;
       background: var(--surface-page);
-      padding: 16px clamp(16px, 4vw, 34px) 0;
+      padding: 8px clamp(16px, 4vw, 34px) 0;
       margin-left: calc(-1 * clamp(16px, 4vw, 34px));
       margin-right: calc(-1 * clamp(16px, 4vw, 34px));
       gap: var(--space-2);
+    }
+    .brandhdr__crown-wrap {
+      display: flex;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(-6px) scale(1.33);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .brandhdr__crown-wrap.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
     }
     .brandhdr__name {
       font-size: clamp(22px, 6vw, 32px);
@@ -196,3 +217,28 @@ const isActive = (r: string) =>
     }
   }
 </style>
+
+<script>
+  const frameCrown = document.querySelector('.acdf-crown');
+  const hdrCrown = document.querySelector('.brandhdr__crown-wrap');
+  if (frameCrown && hdrCrown) {
+    const crownExit = frameCrown.getBoundingClientRect().bottom + window.scrollY - 15;
+    let showing = false;
+    window.addEventListener('scroll', () => {
+      const show = window.scrollY > crownExit;
+      if (show !== showing) {
+        showing = show;
+        hdrCrown.classList.toggle('is-visible', show);
+      }
+    }, { passive: true });
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('.caret[data-dir]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const ul = btn.closest('.brandhdr__nav')?.querySelector('ul');
+      if (ul) {
+        ul.scrollBy({ left: parseInt(btn.dataset.dir!) * 150, behavior: 'smooth' });
+      }
+    });
+  });
+</script>
