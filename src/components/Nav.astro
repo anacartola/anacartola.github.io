@@ -142,6 +142,11 @@ const isActive = (r: string) =>
     color: var(--frame-accent);
     border-color: var(--frame-accent);
   }
+  :global([data-theme="dark"]) .brandhdr__link:hover,
+  :global([data-theme="dark"]) .brandhdr__link:focus-visible {
+    color: var(--orange-500);
+    border-color: var(--orange-500);
+  }
   /* the active (current) item is the high-contrast one */
   .brandhdr__link.is-active {
     color: var(--text-body);
