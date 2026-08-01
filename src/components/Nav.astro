@@ -146,22 +146,23 @@ const isActive = (r: string) =>
     margin-top: var(--space-2);
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 768px) {
     .brandhdr {
       position: sticky;
       top: 0;
       z-index: 5;
       background: var(--surface-page);
       padding: 50px var(--space-2) 0;
-      gap: var(--space-1);
+      gap: var(--space-2);
     }
     .brandhdr__name {
-      font-size: clamp(20px, 6vw, 30px);
+      font-size: clamp(22px, 6vw, 32px);
     }
     .brandhdr__tools {
       position: static;
       justify-content: center;
-      margin-bottom: 0;
+      gap: var(--space-4);
+      margin-bottom: var(--space-1);
     }
     .brandhdr__nav {
       flex-wrap: nowrap;
