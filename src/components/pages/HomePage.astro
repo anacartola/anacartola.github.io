@@ -8,6 +8,7 @@ import ProjectCard from "../ProjectCard.astro";
 import PostCard from "../PostCard.astro";
 import ClientWall from "../ClientWall.astro";
 import OrnamentalBand from "../OrnamentalBand.astro";
+import IntroOverlay from "../IntroOverlay.astro";
 
 interface Props {
   locale: Locale;
@@ -50,6 +51,7 @@ const tabs = [
   description={t.home.heroSub}
   availableLocales={LOCALES}
 >
+  <IntroOverlay />
   <!-- HERO -->
   <section class="hero">
     <div class="hero__badges">

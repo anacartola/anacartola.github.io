@@ -125,9 +125,10 @@ const corners = [
   /* Crowned: the cartola breaks the top rule — brim flush with the outer line,
      round body hanging DOWN into the content. */
   .acdf-edge-h--crown { align-items: flex-start; gap: 24px; }
-  .acdf-crown { position: relative; z-index: 3; flex: none; display: block; }
+  .acdf-crown { position: relative; z-index: 10; flex: none; display: block; }
   .acdf-content {
     position: relative;
+    z-index: 1;
     min-width: 0;
     min-height: 0;
   }
