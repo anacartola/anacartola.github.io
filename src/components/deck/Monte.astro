@@ -1,0 +1,100 @@
+---
+import type { DeckCard } from "../../lib/deck";
+import type { Suit } from "../../data/suits";
+import PlayingCard from "./PlayingCard.astro";
+import SuitIcon from "../symbols/SuitIcon.astro";
+import { type Locale } from "../../i18n";
+import { useTranslations } from "../../i18n/utils";
+
+interface Props {
+  column: Suit;
+  cards: DeckCard[];
+  locale: Locale;
+}
+const { column, cards, locale } = Astro.props;
+const t = useTranslations(locale);
+const suitName = t.suits[column];
+
+const STRIP = 140;
+const CARD_H = 350;
+const stackHeight = cards.length > 0
+  ? CARD_H + (cards.length - 1) * STRIP
+  : CARD_H;
+---
+
+<div class="monte" data-monte={column}>
+  <h3 class="monte__header">
+    <SuitIcon suit={column} size={16} />
+    <span>{suitName}</span>
+  </h3>
+
+  {cards.length > 0 ? (
+    <div class="monte__stack" style={`--stack-h:${stackHeight}px`}>
+      {cards.map((card) => (
+        <PlayingCard
+          rank={card.rank}
+          suit={card.suit}
+          title={card.project.entry.data.title}
+          summary={card.project.entry.data.summary}
+          stack={card.project.entry.data.stack}
+          slug={card.project.slug}
+          locale={locale}
+          index={card.index}
+        />
+      ))}
+    </div>
+  ) : (
+    <div class="monte__empty">
+      <span class="monte__placeholder">—</span>
+    </div>
+  )}
+</div>
+
+<style>
+  .monte {
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+    flex-shrink: 0;
+  }
+
+  .monte__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--text-heading);
+    margin: 0 0 var(--space-3);
+  }
+
+  .monte__stack {
+    position: relative;
+    width: 250px;
+    height: var(--stack-h, 350px);
+  }
+
+  /* Negative-margin stacking: each card after the first overlaps,
+     leaving a 140px strip visible */
+  .monte__stack :global(.acdeck) {
+    position: absolute;
+    left: 0;
+    top: calc(var(--ci) * 140px);
+    z-index: calc(50 - var(--ci));
+  }
+
+  .monte__empty {
+    width: 250px;
+    height: 350px;
+    border: 1.5px dashed var(--border-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .monte__placeholder {
+    color: var(--text-muted);
+    font-size: 24px;
+  }
+</style>

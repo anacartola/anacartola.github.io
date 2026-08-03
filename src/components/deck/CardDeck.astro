@@ -1,0 +1,193 @@
+---
+import type { ColumnStack } from "../../lib/deck";
+import Monte from "./Monte.astro";
+import { type Locale } from "../../i18n";
+
+interface Props {
+  stacks: ColumnStack[];
+  locale: Locale;
+}
+const { stacks, locale } = Astro.props;
+---
+
+<div class="card-deck" data-deck role="listbox" aria-orientation="horizontal">
+  {stacks.map((stack) => (
+    <Monte column={stack.column} cards={stack.cards} locale={locale} />
+  ))}
+</div>
+
+<style>
+  .card-deck {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding-bottom: var(--space-8);
+  }
+
+  @media (max-width: 768px) {
+    .card-deck {
+      gap: 16px;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      padding-bottom: var(--space-6);
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+    }
+    .card-deck > :global(.monte) {
+      scroll-snap-align: start;
+      transform: scale(0.832);
+      transform-origin: top left;
+    }
+  }
+</style>
+
+<script>
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const FLIP_DUR = reducedMotion ? 0 : 150;
+  const RAISE_PX = -34;
+
+  document.querySelectorAll<HTMLElement>("[data-deck]").forEach((deck) => {
+    const montes = deck.querySelectorAll<HTMLElement>("[data-monte]");
+
+    montes.forEach((monte) => {
+      const cards = () => Array.from(monte.querySelectorAll<HTMLElement>(".acdeck"));
+      let activeIdx = 0;
+
+      function getActive(): HTMLElement | null {
+        const all = cards();
+        return all[activeIdx] ?? all[0] ?? null;
+      }
+
+      function raiseCard(card: HTMLElement) {
+        card.style.transform = `translateY(${RAISE_PX}px)`;
+        card.style.zIndex = "100";
+      }
+
+      function lowerCard(card: HTMLElement) {
+        card.style.transform = "";
+        card.style.zIndex = String(50 - Number(card.dataset.index ?? 0));
+      }
+
+      // Hover: raise active card
+      monte.addEventListener("mouseenter", () => {
+        const c = getActive();
+        if (c) raiseCard(c);
+      });
+
+      monte.addEventListener("mouseleave", () => {
+        cards().forEach((c) => {
+          lowerCard(c);
+          if (c.classList.contains("showback")) {
+            flipCard(c);
+          }
+        });
+        activeIdx = 0;
+      });
+
+      // Wheel: cycle through cards in the stack
+      monte.addEventListener("wheel", (e) => {
+        const all = cards();
+        if (all.length <= 1) return;
+        e.preventDefault();
+
+        const prev = getActive();
+        if (prev) lowerCard(prev);
+
+        if (e.deltaY > 0) {
+          activeIdx = (activeIdx + 1) % all.length;
+        } else {
+          activeIdx = (activeIdx - 1 + all.length) % all.length;
+        }
+
+        const next = getActive();
+        if (next) raiseCard(next);
+      }, { passive: false });
+
+      // Click: flip active card (scaleX 2D)
+      monte.addEventListener("click", (e) => {
+        const target = e.target as HTMLElement;
+        if (target.closest("a")) return;
+
+        const card = target.closest<HTMLElement>(".acdeck");
+        if (!card || card.dataset.busy === "true") return;
+
+        flipCard(card);
+      });
+
+      // Keyboard: Enter/Space flip, arrows cycle
+      monte.addEventListener("keydown", (e) => {
+        const all = cards();
+        if (all.length === 0) return;
+
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          const c = getActive();
+          if (c && c.dataset.busy !== "true") flipCard(c);
+        } else if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+          e.preventDefault();
+          const prev = getActive();
+          if (prev) lowerCard(prev);
+          activeIdx = (activeIdx + 1) % all.length;
+          const next = getActive();
+          if (next) {
+            raiseCard(next);
+            next.focus();
+          }
+        } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+          e.preventDefault();
+          const prev = getActive();
+          if (prev) lowerCard(prev);
+          activeIdx = (activeIdx - 1 + all.length) % all.length;
+          const next = getActive();
+          if (next) {
+            raiseCard(next);
+            next.focus();
+          }
+        }
+      });
+    });
+  });
+
+  function animateWithFallback(el: HTMLElement, keyframes: Keyframe[], opts: KeyframeAnimationOptions): Promise<void> {
+    return new Promise((resolve) => {
+      const dur = (opts.duration as number) || 0;
+      try {
+        const anim = el.animate(keyframes, opts);
+        const timer = setTimeout(() => resolve(), dur + 50);
+        anim.onfinish = () => { clearTimeout(timer); resolve(); };
+      } catch {
+        setTimeout(resolve, dur);
+      }
+    });
+  }
+
+  async function flipCard(card: HTMLElement) {
+    card.dataset.busy = "true";
+    const isShowingBack = card.classList.contains("showback");
+
+    if (FLIP_DUR > 0) {
+      await animateWithFallback(card,
+        [{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }],
+        { duration: FLIP_DUR, easing: "ease-in", fill: "forwards" },
+      );
+    }
+
+    if (isShowingBack) {
+      card.classList.remove("showback");
+    } else {
+      card.classList.add("showback");
+    }
+
+    if (FLIP_DUR > 0) {
+      await animateWithFallback(card,
+        [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
+        { duration: FLIP_DUR, easing: "ease-out", fill: "forwards" },
+      );
+    }
+
+    card.style.transform = "";
+    card.dataset.busy = "false";
+  }
+</script>

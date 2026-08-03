@@ -2,7 +2,7 @@ import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
 
 /** Suit <-> area: spades Analytics · diamonds Business · hearts Research · clubs Engineering. */
-const suit = z.enum(["spades", "diamonds", "hearts", "clubs"]);
+const suit = z.enum(["spades", "diamonds", "hearts", "clubs", "coringa"]);
 
 const lang = z.enum(["pt", "en", "fr", "zh"]);
 

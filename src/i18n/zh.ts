@@ -77,6 +77,7 @@ export const zh: Dictionary = {
     liveUrl: "在线查看",
     relatedPosts: "相关文章",
     empty: "该领域暂无项目。",
+    viewProject: "查看项目",
   },
   blog: {
     title: "博客",
@@ -115,6 +116,7 @@ export const zh: Dictionary = {
     diamonds: "Business",
     hearts: "Research",
     clubs: "Engineering",
+    coringa: "王牌",
   },
   resources: {
     title: "资源",

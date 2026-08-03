@@ -78,6 +78,7 @@ export const pt = {
     liveUrl: "Ver online",
     relatedPosts: "Artigos relacionados",
     empty: "Nenhum projeto nesta área ainda.",
+    viewProject: "Ver projeto",
   },
   blog: {
     title: "Blog",
@@ -116,6 +117,7 @@ export const pt = {
     diamonds: "Business",
     hearts: "Research",
     clubs: "Engineering",
+    coringa: "Coringa",
   },
   resources: {
     title: "Recursos",

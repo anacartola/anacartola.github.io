@@ -1,12 +1,7 @@
 ---
 import { ICONS } from "../icons/data";
 
-/**
- * Suit glyph — the brand categorisation system. Uses the design-system suit
- * icons (fill style). spades Analytics · diamonds Business · hearts Research ·
- * clubs Engineering. Paints currentColor. API preserved: suit, size, label.
- */
-type Suit = "spades" | "diamonds" | "hearts" | "clubs";
+type Suit = "spades" | "diamonds" | "hearts" | "clubs" | "coringa";
 interface Props {
   suit: Suit;
   size?: number;
@@ -15,22 +10,38 @@ interface Props {
 }
 const { suit, size = 16, label, class: className } = Astro.props;
 
-const NAME: Record<Suit, keyof typeof ICONS> = {
+const NAME: Record<Exclude<Suit, "coringa">, keyof typeof ICONS> = {
   spades: "IconsCartolaNaipesSpadeStyleFill",
   diamonds: "IconsCartolaNaipesDiamondStyleFill",
   hearts: "IconsCartolaNaipesHeartStyleFill",
   clubs: "IconsCartolaNaipesCloverStyleFill",
 };
-const glyph = ICONS[NAME[suit]];
+
+const isCoringa = suit === "coringa";
+const glyph = isCoringa ? null : ICONS[NAME[suit]];
+const HAT_BODY = `<path d="M 490.888 387.526 C 599.444 443.45 673.684 556.634 673.684 687.158 C 673.684 873.191 522.874 1024 336.842 1024 C 150.809 1024 0 873.191 0 687.158 C 0 556.634 74.239 443.45 182.795 387.526 L 0 0 L 673.684 0 L 490.888 387.526 Z M 336.847 296.421 C 298.003 296.421 261.358 305.849 229.053 322.537 L 328.321 533.53 C 331.722 540.752 341.971 540.752 345.372 533.53 L 444.632 322.537 C 412.328 305.851 375.687 296.421 336.847 296.421 Z" fill-rule="nonzero"/>`;
 ---
 
-<svg
-  width={size}
-  height={size}
-  viewBox={glyph.viewBox}
-  fill="currentColor"
-  role={label ? "img" : undefined}
-  aria-hidden={label ? undefined : "true"}
-  class={className}
-  set:html={(label ? `<title>${label}</title>` : "") + glyph.body}
-/>
+{isCoringa ? (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 673.684 1024"
+    fill="currentColor"
+    role={label ? "img" : undefined}
+    aria-hidden={label ? undefined : "true"}
+    class={className}
+    set:html={(label ? `<title>${label}</title>` : "") + HAT_BODY}
+  />
+) : (
+  <svg
+    width={size}
+    height={size}
+    viewBox={glyph!.viewBox}
+    fill="currentColor"
+    role={label ? "img" : undefined}
+    aria-hidden={label ? undefined : "true"}
+    class={className}
+    set:html={(label ? `<title>${label}</title>` : "") + glyph!.body}
+  />
+)}

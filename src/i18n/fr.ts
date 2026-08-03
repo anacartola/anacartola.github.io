@@ -77,6 +77,7 @@ export const fr: Dictionary = {
     liveUrl: "Voir en ligne",
     relatedPosts: "Articles liés",
     empty: "Aucun projet dans ce domaine pour l'instant.",
+    viewProject: "Voir le projet",
   },
   blog: {
     title: "Blog",
@@ -115,6 +116,7 @@ export const fr: Dictionary = {
     diamonds: "Business",
     hearts: "Research",
     clubs: "Engineering",
+    coringa: "Joker",
   },
   resources: {
     title: "Ressources",

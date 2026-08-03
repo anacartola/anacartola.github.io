@@ -1,0 +1,47 @@
+---
+/**
+ * Chip — DS anatomy: frame+inner tag (same as Badge but interactive context).
+ * In static usage (no onClick/onRemove), renders as a passive label.
+ * Rest teal, hover copper. acchip/acchip-inner class pair.
+ */
+interface Props {
+  class?: string;
+  [key: string]: any;
+}
+const { class: className, ...rest } = Astro.props;
+---
+
+<span class:list={["acchip", className]} {...rest}>
+  <span class="acchip-inner"><slot /></span>
+</span>
+
+<style>
+  .acchip {
+    --o: var(--blue-300);
+    --i: var(--blue-50);
+    --tx: var(--blue-700);
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding: var(--inset-gap-sm);
+    background: var(--o);
+    border-radius: 0;
+    transition: background var(--dur-fast) var(--ease-std);
+  }
+  .acchip-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--i);
+    border-radius: var(--inner-radius);
+    padding: 0 10px;
+    height: 22px;
+    font: var(--type-label);
+    letter-spacing: .2px;
+    color: var(--tx);
+    white-space: nowrap;
+    transition:
+      background var(--dur-fast) var(--ease-std),
+      color var(--dur-fast) var(--ease-std);
+  }
+</style>

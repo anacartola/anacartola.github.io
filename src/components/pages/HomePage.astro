@@ -3,8 +3,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { LOCALES, type Locale } from "../../i18n";
 import { useTranslations, localizedPath } from "../../i18n/utils";
 import { getProjectsForLocale, getPostsForLocale } from "../../lib/content";
+import { buildDeck, type DeckCard } from "../../lib/deck";
 import Button from "../Button.astro";
-import ProjectCard from "../ProjectCard.astro";
+import PlayingCard from "../deck/PlayingCard.astro";
 import PostCard from "../PostCard.astro";
 import ClientWall from "../ClientWall.astro";
 import OrnamentalBand from "../OrnamentalBand.astro";
@@ -23,9 +24,13 @@ const STATUS_CLS: Record<string, string> = {
 };
 
 const allProjects = await getProjectsForLocale(locale);
-const pinned = allProjects.filter((p) => p.entry.data.featured);
-const unpinned = allProjects.filter((p) => !p.entry.data.featured);
-const featuredList = [...pinned, ...unpinned].slice(0, 3);
+const deck = buildDeck(allProjects);
+const homeCards: DeckCard[] = deck
+  .map((stack) => {
+    const pinned = stack.cards.find((c) => c.project.entry.data.featured);
+    return pinned ?? stack.cards[0] ?? null;
+  })
+  .filter((c): c is DeckCard => c !== null);
 const posts = (await getPostsForLocale(locale)).slice(0, 3);
 
 const rows = allProjects.map((p) => ({
@@ -66,17 +71,26 @@ const tabs = [
 
   <OrnamentalBand count={7} />
 
-  <!-- FEATURED PROJECTS -->
+  <!-- FEATURED PROJECTS (one card per suit) -->
   {
-    featuredList.length > 0 && (
+    homeCards.length > 0 && (
       <section class="section">
         <div class="sec-head">
           <h2>{t.home.featuredTitle}</h2>
           <a href={localizedPath("/projects", locale)}>{t.home.allProjects} &#9658;</a>
         </div>
-        <div class="grid3">
-          {featuredList.map((item, i) => (
-            <ProjectCard item={item} locale={locale} cardVariant={i === 1 ? "light-highlight" : "light"} />
+        <div class="home-hand">
+          {homeCards.map((card) => (
+            <PlayingCard
+              rank={card.rank}
+              suit={card.suit}
+              title={card.project.entry.data.title}
+              summary={card.project.entry.data.summary}
+              stack={card.project.entry.data.stack}
+              slug={card.project.slug}
+              locale={locale}
+              index={0}
+            />
           ))}
         </div>
       </section>
@@ -116,7 +130,7 @@ const tabs = [
                 <tr data-status={r.status}>
                   <td><a href={r.href}>{r.title}</a></td>
                   <td>{SUIT_CHAR[r.suit]} {t.suits[r.suit]}</td>
-                  <td><span class:list={["st", STATUS_CLS[r.status]]}>{t.home.status[r.status]}</span></td>
+                  <td><span class:list={["st", STATUS_CLS[r.status]]}><span class="st__txt">{t.home.status[r.status]}</span></span></td>
                 </tr>
               ))}
             </tbody>
@@ -198,6 +212,27 @@ const tabs = [
 
   .grid3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: var(--space-5); }
 
+  .home-hand {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 768px) {
+    .home-hand {
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+      padding-bottom: var(--space-4);
+    }
+    .home-hand > :global(.acdeck) {
+      scroll-snap-align: start;
+      flex-shrink: 0;
+    }
+  }
+
   /* Tabs */
   .tabs { display: flex; gap: 4px; }
   .tab {
@@ -247,13 +282,29 @@ const tabs = [
   :global([data-theme="dark"]) .actable tbody tr:hover td { color: var(--blue-900); }
 
   .st {
-    display: inline-block;
-    font: var(--type-caption); letter-spacing: 0.06em; text-transform: uppercase;
-    padding: 3px 9px; border: 1px solid currentColor; border-radius: var(--radius-xs);
+    display: inline-flex;
+    padding: 3px;
+    height: 24px;
+    border-radius: 0;
+    vertical-align: middle;
   }
-  .st--success { color: var(--status-success); }
-  .st--warning { color: var(--status-warning); }
-  .st--neutral { color: var(--text-muted); }
+  .st__txt {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 8px;
+    border-radius: var(--radius-sm);
+    font: 600 10px/1 var(--font-body);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--blue-900);
+    white-space: nowrap;
+  }
+  .st--success { background: var(--status-success); }
+  .st--success .st__txt { background: var(--green-50); }
+  .st--warning { background: var(--status-warning); }
+  .st--warning .st__txt { background: var(--yellow-50); }
+  .st--neutral { background: var(--grey-600); }
+  .st--neutral .st__txt { background: var(--grey-50); }
   tr[hidden] { display: none; }
 
   /* Resources accent (copper) */
@@ -285,6 +336,52 @@ const tabs = [
       rows.forEach((row) => {
         row.hidden = key !== "all" && row.dataset.status !== key;
       });
+    });
+  });
+
+  // Flip interaction for home hand cards
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const FLIP_DUR = reducedMotion ? 0 : 150;
+
+  function animateFlip(el: HTMLElement, keyframes: Keyframe[], opts: KeyframeAnimationOptions): Promise<void> {
+    return new Promise((resolve) => {
+      const dur = (opts.duration as number) || 0;
+      try {
+        const anim = el.animate(keyframes, opts);
+        const timer = setTimeout(() => resolve(), dur + 50);
+        anim.onfinish = () => { clearTimeout(timer); resolve(); };
+      } catch { setTimeout(resolve, dur); }
+    });
+  }
+
+  async function flipHomeCard(card: HTMLElement) {
+    card.dataset.busy = "true";
+    const showing = card.classList.contains("showback");
+    if (FLIP_DUR > 0) {
+      await animateFlip(card,
+        [{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }],
+        { duration: FLIP_DUR, easing: "ease-in", fill: "forwards" });
+    }
+    card.classList.toggle("showback", !showing);
+    if (FLIP_DUR > 0) {
+      await animateFlip(card,
+        [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
+        { duration: FLIP_DUR, easing: "ease-out", fill: "forwards" });
+    }
+    card.style.transform = "";
+    card.dataset.busy = "false";
+  }
+
+  document.querySelectorAll<HTMLElement>(".home-hand .acdeck").forEach((card) => {
+    card.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).closest("a")) return;
+      if (card.dataset.busy === "true") return;
+      flipHomeCard(card);
+    });
+    card.addEventListener("mouseleave", () => {
+      if (card.classList.contains("showback") && card.dataset.busy !== "true") {
+        flipHomeCard(card);
+      }
     });
   });
 </script>

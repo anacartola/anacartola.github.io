@@ -1,0 +1,163 @@
+---
+import type { Suit } from "../../data/suits";
+import { COLUMN_META } from "../../data/suits";
+import SuitIcon from "../symbols/SuitIcon.astro";
+import Chip from "../Chip.astro";
+import Button from "../Button.astro";
+import { type Locale } from "../../i18n";
+import { useTranslations, localizedPath } from "../../i18n/utils";
+
+interface Props {
+  rank: string;
+  suit: Suit;
+  title: string;
+  summary: string;
+  stack: string[];
+  slug: string;
+  locale: Locale;
+  index: number;
+}
+
+const { rank, suit, title, summary, stack, slug, locale, index } = Astro.props;
+const t = useTranslations(locale);
+const href = localizedPath(`/projects/${slug}`, locale);
+const meta = COLUMN_META[suit];
+const techLabel = (t.projects as any).technologies ?? "Tecnologias";
+const descLabel = (t.projects as any).description ?? "Descrição";
+const ctaLabel = (t.projects as any).viewProject ?? "Ver projeto →";
+
+const CORNER_SVG = `<g transform="translate(3,3)"><path d="M 5 12 C 5 14.761 7.239 17 10 17 L 22 17 L 22 22 L 0 22 L 0 0 L 5 0 L 5 12 Z"/><rect width="7" height="7" transform="matrix(0.707,0.707,-0.707,0.707,13.5,3.55)"/></g>`;
+---
+
+<div
+  class="acdeck"
+  data-suit={suit}
+  data-index={index}
+  role="option"
+  tabindex="0"
+  aria-label={`${rank} ${t.suits[suit]} — ${title}`}
+  style={`--acdeck-suit:${meta.suitColor};--acdeck-orn:${meta.ornamentColor};--ci:${index}`}
+>
+  <div class="flipper">
+    <!-- ===== FRENTE (titled) ===== -->
+    <div class="face front">
+      <svg class="corner corner--tr" width="28" height="28" viewBox="0 0 28 28" fill="currentColor" aria-hidden="true" style="transform:scale(-1,-1);transform-origin:center" set:html={CORNER_SVG} />
+      <svg class="corner corner--bl" width="28" height="28" viewBox="0 0 28 28" fill="currentColor" aria-hidden="true" style="transform:scale(1,1);transform-origin:center" set:html={CORNER_SVG} />
+
+      <span class="rule rule--top" aria-hidden="true"></span>
+      <span class="rule rule--right" aria-hidden="true"></span>
+      <span class="rule rule--bottom" aria-hidden="true"></span>
+      <span class="rule rule--left" aria-hidden="true"></span>
+
+      <span class="idx idx--tl">
+        <span class="idx__rank">{rank}</span>
+        <SuitIcon suit={suit} size={22} />
+      </span>
+
+      <h3 class="acdeck-title front__title">{title}</h3>
+
+      <span class="front__symbol">
+        <SuitIcon suit={suit} size={80} />
+      </span>
+
+      <span class="idx idx--br">
+        <span class="idx__rank">{rank}</span>
+        <SuitIcon suit={suit} size={22} />
+      </span>
+    </div>
+
+    <!-- ===== VERSO (info) ===== -->
+    <div class="face back">
+      <svg class="corner corner--tl" width="28" height="28" viewBox="0 0 28 28" fill="currentColor" aria-hidden="true" style="transform:scale(1,-1);transform-origin:center" set:html={CORNER_SVG} />
+      <svg class="corner corner--tr" width="28" height="28" viewBox="0 0 28 28" fill="currentColor" aria-hidden="true" style="transform:scale(-1,-1);transform-origin:center" set:html={CORNER_SVG} />
+      <svg class="corner corner--bl" width="28" height="28" viewBox="0 0 28 28" fill="currentColor" aria-hidden="true" style="transform:scale(1,1);transform-origin:center" set:html={CORNER_SVG} />
+      <svg class="corner corner--br" width="28" height="28" viewBox="0 0 28 28" fill="currentColor" aria-hidden="true" style="transform:scale(-1,1);transform-origin:center" set:html={CORNER_SVG} />
+
+      <div class="acdeck-info">
+        <div class="acdeck-scroll">
+          <h3 class="acdeck-title" style="margin:0 0 16px">{title}</h3>
+          {stack.length > 0 && (
+            <>
+              <p class="acdeck-label">{techLabel}</p>
+              <div class="acdeck-tags">{stack.map((tech) => <Chip>{tech}</Chip>)}</div>
+            </>
+          )}
+          {summary && (
+            <>
+              <p class="acdeck-label">{descLabel}</p>
+              <p class="acdeck-desc">{summary}</p>
+            </>
+          )}
+        </div>
+        <div class="acdeck-cta">
+          <Button href={href} variant="primary" size="sm">{ctaLabel}</Button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* === SHELL === */
+  .acdeck{position:relative;width:250px;height:350px;box-sizing:border-box;background:var(--surface-card);box-shadow:var(--shadow-raised);overflow:hidden;cursor:pointer;outline:none;flex-shrink:0}
+  .acdeck:focus-visible{outline:2px solid var(--frame-accent);outline-offset:3px}
+
+  /* === FLIPPER / FACES === */
+  .flipper{position:relative;width:100%;height:100%}
+  .face{position:absolute;inset:0}
+  .face.front{opacity:1;background:var(--blue-800)}
+  .face.back{opacity:0}
+  .acdeck.showback .face.front{opacity:0}
+  .acdeck.showback .face.back{opacity:1}
+
+  /* === FRONT INVERSION: dark bg in light mode, light bg in dark === */
+  .face.front .acdeck-title{color:var(--grey-50)}
+  .acdeck[data-suit="spades"] > .flipper > .face.front,
+  .acdeck[data-suit="clubs"] > .flipper > .face.front{--acdeck-suit:var(--grey-50)}
+  :global([data-theme="dark"]) .face.front{background:var(--grey-50)}
+  :global([data-theme="dark"]) .face.front .acdeck-title{color:var(--blue-900)}
+  :global([data-theme="dark"]) .acdeck[data-suit="spades"] > .flipper > .face.front,
+  :global([data-theme="dark"]) .acdeck[data-suit="clubs"] > .flipper > .face.front{--acdeck-suit:var(--blue-500)}
+
+  /* === CORNERS (déco, ornament color) === */
+  .corner{position:absolute;color:var(--acdeck-orn);z-index:2}
+  .corner--tl{top:11px;left:11px}
+  .corner--tr{top:11px;right:11px}
+  .corner--bl{bottom:11px;left:11px}
+  .corner--br{bottom:11px;right:11px}
+
+  /* === RÉGUAS (segmentos curtos, frente) === */
+  .rule{position:absolute;background:var(--acdeck-orn);z-index:1}
+  .rule--top{height:5px;top:14px;left:25%;right:25%}
+  .rule--bottom{height:5px;bottom:14px;left:25%;right:25%}
+  .rule--left{width:5px;left:14px;top:30%;bottom:30%}
+  .rule--right{width:5px;right:14px;top:30%;bottom:30%}
+
+  /* === ÍNDICE (rank + naipe, cor do naipe) === */
+  .idx{position:absolute;display:flex;flex-direction:column;align-items:center;gap:7px;line-height:1;color:var(--acdeck-suit);z-index:3}
+  .idx--tl{top:14px;left:15px}
+  .idx--br{bottom:14px;right:15px;transform:rotate(180deg)}
+  .idx__rank{font-family:var(--font-display);font-weight:700;font-size:27px}
+
+  /* === TÍTULO (idêntico nos dois lados) === */
+  .acdeck-title{font:400 13px/1.4 var(--font-body);text-transform:uppercase;letter-spacing:.04em;color:var(--text-body);margin:0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .front__title{position:absolute;top:48px;left:50px;right:32px;z-index:3}
+
+  /* === SÍMBOLO CENTRAL === */
+  .front__symbol{position:absolute;left:0;right:0;top:55%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;color:var(--acdeck-suit);z-index:1}
+
+  /* === VERSO (scroll interno, CTA fixa) === */
+  .acdeck-info{position:absolute;inset:48px 32px 46px;display:flex;flex-direction:column;z-index:3}
+  .acdeck-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:thin}
+  .acdeck-scroll::-webkit-scrollbar{width:3px}
+  .acdeck-scroll::-webkit-scrollbar-thumb{background:var(--border-soft);border-radius:2px}
+  .acdeck-label{font:var(--type-caption);text-transform:uppercase;letter-spacing:1.3px;color:var(--text-heading);margin:0 0 6px}
+  .acdeck-tags{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 16px}
+  .acdeck-desc{font-size:12px;line-height:1.5;color:var(--text-muted);margin:0}
+  .acdeck-cta{flex:none;margin-top:12px}
+  .acdeck-info :global(.acchip){padding:3px}
+  .acdeck-info :global(.acchip-inner){height:18px;padding:0 8px;font-size:10px;letter-spacing:.1px}
+  .acdeck-cta :global(.acb){padding:4px}
+  .acdeck-cta :global(.acb > span){min-height:22px;min-width:0;padding:0 12px;font-size:10px}
+
+</style>
